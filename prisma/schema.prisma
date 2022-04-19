@@ -7,7 +7,93 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Greeting {
-  id    Int    @id @default(autoincrement())
-  value String
+enum Role {
+  User
+  Admin
+}
+
+enum TypePost {
+  Lost
+  Found
+}
+
+enum SocialMediaType {
+  WhatsApp
+  Line
+  Instagram
+}
+
+enum TypeQuestion {
+  PostQuestion
+  UserQuestion
+}
+
+enum StatusConfirmation {
+  Approved
+  Waiting
+  Rejected
+  Answered
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(User)
+  nim       String?
+  phone     String?
+  imgUrl    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Post     Post[]
+  Question Question[]
+  Answer   Answer[]
+}
+
+model Post {
+  id              String          @id @default(uuid())
+  User            User?           @relation(fields: [userId], references: [id])
+  userId          String
+  typePost        TypePost
+  title           String
+  description     String?
+  chronology      String?
+  socialMediaType SocialMediaType
+  socialMedia     String
+  imgUrl          String?
+  date            DateTime
+  activeStatus    Boolean?        @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  Question Question[]
+}
+
+model Question {
+  id             String             @id @default(uuid())
+  User           User?              @relation(fields: [userId], references: [id])
+  userId         String
+  Post           Post?              @relation(fields: [postId], references: [id])
+  postId         String
+  typeQuestion   TypeQuestion
+  Question       String
+  StatusQuestion StatusConfirmation
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  Answer Answer[]
+}
+
+model Answer {
+  id           String             @id @default(uuid())
+  Question     Question?          @relation(fields: [questionId], references: [id])
+  questionId   String
+  User         User?              @relation(fields: [userId], references: [id])
+  userId       String
+  Answer       String
+  statusAnswer StatusConfirmation
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 }
