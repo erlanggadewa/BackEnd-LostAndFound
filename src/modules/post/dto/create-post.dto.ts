@@ -1,5 +1,6 @@
 import {
-  IsDate,
+  IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -45,15 +46,15 @@ export class CreatePostDto {
   @IsNotEmpty()
   socialMedia: string;
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  imgUrl?: string;
+  imgUrl?: string[];
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
   date: string;
 
-  @IsString()
+  @IsBoolean()
   @IsOptional()
   activeStatus?: boolean;
 }
