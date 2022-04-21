@@ -19,8 +19,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    const data = this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const data = await this.userService.create(createUserDto);
     return { data, message: 'User created successfully' };
   }
 
@@ -35,17 +35,17 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const data = this.userService.update(id, updateUserDto);
+    const data = await this.userService.update(id, updateUserDto);
     return { data, message: 'User updated successfully' };
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = this.userService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.userService.remove(id);
     return { data, message: 'User deleted successfully' };
   }
 }

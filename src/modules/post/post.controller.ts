@@ -19,8 +19,8 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    const data = this.postService.create(createPostDto);
+  async create(@Body() createPostDto: CreatePostDto) {
+    const data = await this.postService.create(createPostDto);
     return { data, message: 'Post created successfully' };
   }
 
@@ -35,17 +35,17 @@ export class PostController {
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    const data = this.postService.update(id, updatePostDto);
+    const data = await this.postService.update(id, updatePostDto);
     return { data, message: 'Post updated successfully' };
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = this.postService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.postService.remove(id);
     return { data, message: 'Post removed successfully' };
   }
 }

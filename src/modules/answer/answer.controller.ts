@@ -19,8 +19,8 @@ export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
   @Post()
-  create(@Body() createAnswerDto: CreateAnswerDto) {
-    const data = this.answerService.create(createAnswerDto);
+  async create(@Body() createAnswerDto: CreateAnswerDto) {
+    const data = await this.answerService.create(createAnswerDto);
     return { data, message: 'Answer created successfully' };
   }
 
@@ -35,17 +35,17 @@ export class AnswerController {
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAnswerDto: UpdateAnswerDto,
   ) {
-    const data = this.answerService.update(id, updateAnswerDto);
+    const data = await this.answerService.update(id, updateAnswerDto);
     return { data, message: 'Answer updated successfully' };
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = this.answerService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.answerService.remove(id);
     return { data, message: 'Answer removed successfully' };
   }
 }
