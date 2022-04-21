@@ -19,8 +19,8 @@ export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @Post()
-  create(@Body() createQuestionDto: CreateQuestionDto) {
-    const data = this.questionService.create(createQuestionDto);
+  async create(@Body() createQuestionDto: CreateQuestionDto) {
+    const data = await this.questionService.create(createQuestionDto);
     return { data, message: 'Question created successfully' };
   }
 
@@ -35,17 +35,17 @@ export class QuestionController {
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateQuestionDto: UpdateQuestionDto,
   ) {
-    const data = this.questionService.update(id, updateQuestionDto);
+    const data = await this.questionService.update(id, updateQuestionDto);
     return { data, message: 'Question updated successfully' };
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = this.questionService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.questionService.remove(id);
     return { data, message: 'Question deleted successfully' };
   }
 }
