@@ -43,7 +43,7 @@ model User {
   role      Role     @default(User)
   nim       String?
   phone     String?
-  imgUrl    String[]
+  imgUrl    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -63,7 +63,7 @@ model Post {
   socialMediaType SocialMediaType
   socialMedia     String
   imgUrl          String[]
-  date            DateTime
+  date            String
   activeStatus    Boolean?        @default(true)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
