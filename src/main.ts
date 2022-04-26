@@ -8,12 +8,12 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger('NestApplication');
@@ -25,6 +25,20 @@ async function bootstrap() {
 
   // Enable Helmet
   app.use(helmet());
+
+  // the next two lines for increase upload limit
+  app.use(
+    bodyParser.json({
+      limit: '50mb',
+    }),
+  );
+  app.use(
+    bodyParser.urlencoded({
+      limit: '50mb',
+      parameterLimit: 100000,
+      extended: true,
+    }),
+  );
 
   // set CORS
   app.enableCors();
