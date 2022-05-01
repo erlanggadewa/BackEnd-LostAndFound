@@ -12,4 +12,8 @@ export const envValidationSchema = Joi.object({
 
   // Database
   DATABASE_URL: Joi.string().required(),
+  SHADOW_DATABASE_URL: Joi.string().optional(),
+
+  // JWT SECRET KEY
+  JWT_SECRET: Joi.string().required(),
 });
