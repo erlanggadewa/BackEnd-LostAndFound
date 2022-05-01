@@ -14,6 +14,8 @@ import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
+
+declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger('NestApplication');
@@ -71,6 +73,18 @@ async function bootstrap() {
     .setTitle(configService.get('APP_NAME'))
     .setDescription(`The ${configService.get('APP_NAME')} API description`)
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        // I was also testing it without prefix 'Bearer ' before the JWT
+        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer', // I`ve tested not to use this field, but the result was the same
+        scheme: 'Bearer',
+        type: 'http', // I`ve attempted type: 'apiKey' too
+        in: 'Header',
+      },
+      'access_token', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    )
     .build();
 
   const swaggerDocumentOptions: SwaggerDocumentOptions = {
@@ -100,5 +114,11 @@ async function bootstrap() {
 
   await app.listen(parseInt(configService.get('PORT', '3000'), 10));
   logger.verbose(`Application is running on: ${await app.getUrl()}`);
+
+  // enable hot reload
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();
