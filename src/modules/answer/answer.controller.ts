@@ -33,22 +33,22 @@ export class AnswerController {
     return this.answerService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  @Get(':answerId')
+  findOne(@Param('answerId', ParseUUIDPipe) id: string) {
     return this.answerService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(':answerId')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('answerId', ParseUUIDPipe) id: string,
     @Body() updateAnswerDto: UpdateAnswerDto,
   ) {
     const data = await this.answerService.update(id, updateAnswerDto);
     return { data, message: 'Answer updated successfully' };
   }
 
-  @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
+  @Delete(':answerId')
+  async remove(@Param('answerId', ParseUUIDPipe) id: string) {
     const data = await this.answerService.remove(id);
     return { data, message: 'Answer removed successfully' };
   }

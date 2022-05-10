@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { FilterPostDto } from './dto/filter-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
@@ -39,5 +40,36 @@ export class PostService {
     } catch (error) {
       throw error;
     }
+  }
+  async findAllUserFoundPost(userId: string) {
+    return await this.prisma.post.findMany({
+      where: { userId, typePost: 'Found' },
+    });
+  }
+
+  async findAllFollowingFoundPost(userId: string, filter: FilterPostDto) {
+    return await this.prisma.post.findMany({
+      where: {
+        typePost: 'Found',
+        activeStatus: true,
+        Questions: {
+          some: {
+            typeQuestion: 'PostQuestion',
+            Answers: { some: { userId, statusAnswer: filter.statusAnswer } },
+          },
+        },
+      },
+    });
+  }
+
+  async findSocialMediaByPostId(postId: string) {
+    console.log(
+      '🚀 ~ file: post.service.ts ~ line 66 ~ PostService ~ findSocialMediaByPostId ~ postId',
+      postId,
+    );
+    return await this.prisma.post.findUnique({
+      where: { id: postId },
+      select: { socialMedia: true, socialMediaType: true },
+    });
   }
 }

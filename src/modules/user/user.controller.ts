@@ -35,22 +35,22 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  @Get(':userId')
+  findOne(@Param('userId', ParseUUIDPipe) id: string) {
     return this.userService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(':userId')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('userId', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     const data = await this.userService.update(id, updateUserDto);
     return { data, message: 'User updated successfully' };
   }
 
-  @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
+  @Delete(':userId')
+  async remove(@Param('userId', ParseUUIDPipe) id: string) {
     const data = await this.userService.remove(id);
     return { data, message: 'User deleted successfully' };
   }

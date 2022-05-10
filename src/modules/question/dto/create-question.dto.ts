@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 enum TypeQuestion {
   PostQuestion = 'PostQuestion',
@@ -20,15 +20,15 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   postId: string;
 
-  @IsString()
+  @IsEnum(TypeQuestion)
   @IsNotEmpty()
   typeQuestion: TypeQuestion;
 
   @IsString()
   @IsNotEmpty()
-  Question: string;
+  question: string;
 
-  @IsString()
+  @IsEnum(StatusConfirmation)
   @IsNotEmpty()
-  StatusQuestion: StatusConfirmation;
+  statusQuestion: StatusConfirmation;
 }

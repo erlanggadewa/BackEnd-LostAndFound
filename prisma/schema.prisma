@@ -48,9 +48,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Post     Post[]
-  Question Question[]
-  Answer   Answer[]
+  Posts     Post[]
+  Questions Question[]
+  Answers   Answer[]
 }
 
 model Post {
@@ -69,7 +69,7 @@ model Post {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  Question Question[]
+  Questions Question[]
 }
 
 model Question {
@@ -79,12 +79,12 @@ model Question {
   Post           Post?              @relation(fields: [postId], references: [id])
   postId         String
   typeQuestion   TypeQuestion
-  Question       String
-  StatusQuestion StatusConfirmation
+  question       String
+  statusQuestion StatusConfirmation
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
-  Answer Answer[]
+  Answers Answer[]
 }
 
 model Answer {
@@ -93,7 +93,7 @@ model Answer {
   questionId   String
   User         User?              @relation(fields: [userId], references: [id])
   userId       String
-  Answer       String
+  answer       String
   statusAnswer StatusConfirmation
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt

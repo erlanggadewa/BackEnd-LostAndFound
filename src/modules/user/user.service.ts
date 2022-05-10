@@ -16,6 +16,9 @@ export class UserService {
       data.password = await bcrypt.hash(data.password, saltOrRounds);
       return await this.prisma.user.create({ data });
     } catch (error) {
+      if (error.code === 'P2002') {
+        error.message = 'Credential already exists';
+      }
       throw error;
     }
   }
