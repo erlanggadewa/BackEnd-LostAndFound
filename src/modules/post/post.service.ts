@@ -21,22 +21,29 @@ export class PostService {
     return await this.prisma.post.findMany();
   }
 
-  async findOne(id: string) {
-    return await this.prisma.post.findUnique({ where: { id } });
+  async findOne(postId: string, userId: string) {
+    const data = await this.prisma.post.findUnique({ where: { id: postId } });
+    if (userId == data.userId) {
+      return await this.prisma.post.findUnique({
+        where: { id: postId },
+        include: { Questions: { include: { Answers: true } } },
+      });
+    }
+    return data;
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
+  async update(postId: string, updatePostDto: UpdatePostDto) {
     try {
       const data: Prisma.PostUpdateInput = updatePostDto;
-      return await this.prisma.post.update({ where: { id }, data });
+      return await this.prisma.post.update({ where: { id: postId }, data });
     } catch (error) {
       throw error;
     }
   }
 
-  async remove(id: string) {
+  async remove(postId: string) {
     try {
-      return await this.prisma.post.delete({ where: { id } });
+      return await this.prisma.post.delete({ where: { id: postId } });
     } catch (error) {
       throw error;
     }
@@ -63,13 +70,20 @@ export class PostService {
   }
 
   async findSocialMediaByPostId(postId: string) {
-    console.log(
-      '🚀 ~ file: post.service.ts ~ line 66 ~ PostService ~ findSocialMediaByPostId ~ postId',
-      postId,
-    );
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+      select: { userId: true, socialMedia: true, socialMediaType: true },
+    });
+    const postOwner = await this.prisma.user.findUnique({
+      where: { id: post.userId },
+    });
+
+    return { name: postOwner.name, imgUrl: postOwner.imgUrl, ...post };
+  }
+  async findQuestionByFoundPostId(postId: string) {
     return await this.prisma.post.findUnique({
       where: { id: postId },
-      select: { socialMedia: true, socialMediaType: true },
+      select: { Questions: { where: { typeQuestion: 'PostQuestion' } } },
     });
   }
 }

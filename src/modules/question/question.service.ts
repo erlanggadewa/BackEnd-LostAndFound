@@ -40,4 +40,13 @@ export class QuestionService {
       throw error;
     }
   }
+
+  async getQuestionForValidation(answerId: string) {
+    return await this.prisma.answer.findFirst({
+      where: {
+        id: answerId,
+      },
+      include: { Question: true },
+    });
+  }
 }

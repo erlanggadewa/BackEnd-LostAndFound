@@ -18,7 +18,7 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access_token')
 @ApiTags('Answer')
-@Controller('answer')
+@Controller('answers')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
@@ -34,22 +34,22 @@ export class AnswerController {
   }
 
   @Get(':answerId')
-  findOne(@Param('answerId', ParseUUIDPipe) id: string) {
-    return this.answerService.findOne(id);
+  findOne(@Param('answerId', ParseUUIDPipe) answerId: string) {
+    return this.answerService.findOne(answerId);
   }
 
   @Patch(':answerId')
   async update(
-    @Param('answerId', ParseUUIDPipe) id: string,
+    @Param('answerId', ParseUUIDPipe) answerId: string,
     @Body() updateAnswerDto: UpdateAnswerDto,
   ) {
-    const data = await this.answerService.update(id, updateAnswerDto);
+    const data = await this.answerService.update(answerId, updateAnswerDto);
     return { data, message: 'Answer updated successfully' };
   }
 
   @Delete(':answerId')
-  async remove(@Param('answerId', ParseUUIDPipe) id: string) {
-    const data = await this.answerService.remove(id);
+  async remove(@Param('answerId', ParseUUIDPipe) answerId: string) {
+    const data = await this.answerService.remove(answerId);
     return { data, message: 'Answer removed successfully' };
   }
 }

@@ -19,7 +19,7 @@ import { UserService } from './user.service';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access_token')
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -36,22 +36,22 @@ export class UserController {
   }
 
   @Get(':userId')
-  findOne(@Param('userId', ParseUUIDPipe) id: string) {
-    return this.userService.findOne(id);
+  findOne(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.userService.findOne(userId);
   }
 
   @Patch(':userId')
   async update(
-    @Param('userId', ParseUUIDPipe) id: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const data = await this.userService.update(id, updateUserDto);
+    const data = await this.userService.update(userId, updateUserDto);
     return { data, message: 'User updated successfully' };
   }
 
   @Delete(':userId')
-  async remove(@Param('userId', ParseUUIDPipe) id: string) {
-    const data = await this.userService.remove(id);
+  async remove(@Param('userId', ParseUUIDPipe) userId: string) {
+    const data = await this.userService.remove(userId);
     return { data, message: 'User deleted successfully' };
   }
 }
