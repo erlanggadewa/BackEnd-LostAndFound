@@ -19,7 +19,7 @@ import { UserService } from './user.service';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access_token')
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -35,23 +35,23 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.findOne(id);
+  @Get(':userId')
+  findOne(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.userService.findOne(userId);
   }
 
-  @Patch(':id')
+  @Patch(':userId')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const data = await this.userService.update(id, updateUserDto);
+    const data = await this.userService.update(userId, updateUserDto);
     return { data, message: 'User updated successfully' };
   }
 
-  @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.userService.remove(id);
+  @Delete(':userId')
+  async remove(@Param('userId', ParseUUIDPipe) userId: string) {
+    const data = await this.userService.remove(userId);
     return { data, message: 'User deleted successfully' };
   }
 }

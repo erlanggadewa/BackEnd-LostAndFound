@@ -1,10 +1,10 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-enum StatusConfirmation {
-  Approved = 'Approved',
+enum StatusAnswer {
+  Finished = 'Finished',
   Waiting = 'Waiting',
   Rejected = 'Rejected',
-  Answered = 'Answered',
+  Accepted = 'Accepted',
 }
 
 export class CreateAnswerDto {
@@ -18,9 +18,9 @@ export class CreateAnswerDto {
 
   @IsString()
   @IsNotEmpty()
-  Answer: string;
+  answer: string;
 
-  @IsString()
+  @IsEnum(StatusAnswer)
   @IsNotEmpty()
-  statusAnswer: StatusConfirmation;
+  statusAnswer: StatusAnswer;
 }

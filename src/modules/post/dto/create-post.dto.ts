@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -22,7 +23,7 @@ export class CreatePostDto {
   @IsNotEmpty()
   userId: string;
 
-  @IsString()
+  @IsEnum(TypePost)
   @IsNotEmpty()
   typePost: TypePost;
 
@@ -38,7 +39,7 @@ export class CreatePostDto {
   @IsOptional()
   chronology?: string;
 
-  @IsString()
+  @IsEnum(SocialMediaType)
   @IsNotEmpty()
   socialMediaType: SocialMediaType;
 

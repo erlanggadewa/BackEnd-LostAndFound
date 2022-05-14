@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -24,6 +24,7 @@ export class AuthService {
   }
 
   async login(user: any) {
+    user = await this.userService.findOneByEmail(user.email);
     const payload = { sub: user.id, email: user.email };
 
     return {
@@ -32,5 +33,13 @@ export class AuthService {
         secret: this.configService.get('JWT_SECRET'),
       }),
     };
+  }
+
+  async register(user: any) {
+    if (user.password != user.confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+    delete user.confirmPassword;
+    return await this.userService.create(user);
   }
 }

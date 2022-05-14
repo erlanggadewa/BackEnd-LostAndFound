@@ -18,7 +18,7 @@ import { QuestionService } from './question.service';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access_token')
 @ApiTags('Question')
-@Controller('question')
+@Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
@@ -33,23 +33,26 @@ export class QuestionController {
     return this.questionService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.questionService.findOne(id);
+  @Get(':questionId')
+  findOne(@Param('questionId', ParseUUIDPipe) questionId: string) {
+    return this.questionService.findOne(questionId);
   }
 
-  @Patch(':id')
+  @Patch(':questionId')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('questionId', ParseUUIDPipe) questionId: string,
     @Body() updateQuestionDto: UpdateQuestionDto,
   ) {
-    const data = await this.questionService.update(id, updateQuestionDto);
+    const data = await this.questionService.update(
+      questionId,
+      updateQuestionDto,
+    );
     return { data, message: 'Question updated successfully' };
   }
 
-  @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.questionService.remove(id);
+  @Delete(':questionId')
+  async remove(@Param('questionId', ParseUUIDPipe) questionId: string) {
+    const data = await this.questionService.remove(questionId);
     return { data, message: 'Question deleted successfully' };
   }
 }

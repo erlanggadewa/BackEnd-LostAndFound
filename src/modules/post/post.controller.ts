@@ -18,7 +18,7 @@ import { PostService } from './post.service';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access_token')
 @ApiTags('Post')
-@Controller('post')
+@Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -33,23 +33,23 @@ export class PostController {
     return this.postService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.postService.findOne(id);
+  @Get(':postId')
+  findOne(@Param('postId', ParseUUIDPipe) postId: string) {
+    return this.postService.findOne(postId);
   }
 
-  @Patch(':id')
+  @Patch(':postId')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    const data = await this.postService.update(id, updatePostDto);
+    const data = await this.postService.update(postId, updatePostDto);
     return { data, message: 'Post updated successfully' };
   }
 
-  @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.postService.remove(id);
+  @Delete(':postId')
+  async remove(@Param('postId', ParseUUIDPipe) postId: string) {
+    const data = await this.postService.remove(postId);
     return { data, message: 'Post removed successfully' };
   }
 }
