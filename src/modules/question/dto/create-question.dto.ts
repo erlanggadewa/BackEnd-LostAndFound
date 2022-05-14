@@ -5,11 +5,11 @@ enum TypeQuestion {
   UserQuestion = 'UserQuestion',
 }
 
-enum StatusConfirmation {
-  Approved = 'Approved',
+enum StatusQuestion {
+  Answered = 'Answered',
   Waiting = 'Waiting',
   Rejected = 'Rejected',
-  Answered = 'Answered',
+  Finished = 'Finished',
 }
 export class CreateQuestionDto {
   @IsUUID()
@@ -28,7 +28,7 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   question: string;
 
-  @IsEnum(StatusConfirmation)
+  @IsEnum(StatusQuestion)
   @IsNotEmpty()
-  statusQuestion: StatusConfirmation;
+  statusQuestion: StatusQuestion;
 }

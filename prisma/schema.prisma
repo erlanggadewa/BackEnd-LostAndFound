@@ -38,7 +38,7 @@ enum StatusQuestion {
 
 enum StatusAnswer {
   Waiting
-  Answered
+  Accepted
   Rejected
   Finished
 }

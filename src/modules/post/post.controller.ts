@@ -7,7 +7,6 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -35,8 +34,8 @@ export class PostController {
   }
 
   @Get(':postId')
-  findOne(@Param('postId', ParseUUIDPipe) postId: string, @Request() req: any) {
-    return this.postService.findOne(postId, req.user.userId);
+  findOne(@Param('postId', ParseUUIDPipe) postId: string) {
+    return this.postService.findOne(postId);
   }
 
   @Patch(':postId')
