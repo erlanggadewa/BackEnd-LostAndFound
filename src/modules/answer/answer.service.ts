@@ -40,4 +40,25 @@ export class AnswerService {
       throw error;
     }
   }
+
+  async rejectAnswerInFinishedPost(answerId: string, questionId: string) {
+    try {
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { statusQuestion: 'Finished' },
+      });
+
+      await this.prisma.answer.updateMany({
+        where: { id: { not: answerId }, questionId },
+        data: { statusAnswer: 'Rejected' },
+      });
+
+      return await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { statusAnswer: 'Accepted' },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
