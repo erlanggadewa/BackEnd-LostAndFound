@@ -22,6 +22,21 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
+  @Get(':answerId/questions/:questionId')
+  async rejectAnswerInFinishedPost(
+    @Param('answerId', ParseUUIDPipe) answerId: string,
+    @Param('questionId', ParseUUIDPipe) questionId: string,
+  ) {
+    const data = await this.answerService.rejectAnswerInFinishedPost(
+      answerId,
+      questionId,
+    );
+    return {
+      data,
+      message: `Reject all answers that do not have answer id ${answerId} and question id is ${questionId}`,
+    };
+  }
+
   @Post()
   async create(@Body() createAnswerDto: CreateAnswerDto) {
     const data = await this.answerService.create(createAnswerDto);
