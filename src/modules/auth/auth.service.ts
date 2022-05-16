@@ -28,6 +28,7 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email };
 
     return {
+      userId: user.id,
       access_token: await this.jwtService.signAsync(payload, {
         expiresIn: '60s',
         secret: this.configService.get('JWT_SECRET'),
@@ -37,7 +38,7 @@ export class AuthService {
 
   async register(user: any) {
     if (user.password != user.confirmPassword) {
-      throw new BadRequestException('Passwords do not match');
+      throw new BadRequestException("Passwords doesn't not match");
     }
     delete user.confirmPassword;
     return await this.userService.create(user);
