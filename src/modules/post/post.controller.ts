@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -21,6 +22,32 @@ import { PostService } from './post.service';
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
+
+  @Get('my-post/found/:postId')
+  findMyFoundPost(
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Request() req: any,
+  ) {
+    return this.postService.findMyFoundPost(postId, req.user.userId);
+  }
+
+  @Get('my-post/lost/:postId')
+  findMyLostPost(
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Request() req: any,
+  ) {
+    return this.postService.findMyLostPost(postId, req.user.userId);
+  }
+
+  @Get('/my-post')
+  findAllUserPosts(@Request() req: any) {
+    return this.postService.findAllUserPosts(req.user.userId);
+  }
+
+  @Get('/following')
+  findAllFollowingPost(@Request() req: any) {
+    return this.postService.findAllFollowingPost(req.user.userId);
+  }
 
   @Post()
   async create(@Body() createPostDto: CreatePostDto) {

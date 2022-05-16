@@ -58,4 +58,8 @@ export class CreatePostDto {
   @IsBoolean()
   @IsOptional()
   activeStatus?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  deleteStatus?: boolean;
 }

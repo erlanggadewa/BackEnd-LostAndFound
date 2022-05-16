@@ -14,7 +14,9 @@ export class UserService {
       const data: Prisma.UserCreateInput = createUserDto;
       const saltOrRounds: string = await bcrypt.genSalt();
       data.password = await bcrypt.hash(data.password, saltOrRounds);
-      return await this.prisma.user.create({ data });
+      const userAccount = await this.prisma.user.create({ data });
+      delete userAccount.password;
+      return userAccount;
     } catch (error) {
       if (error.code === 'P2002') {
         error.message = 'Credential already exists';
@@ -38,7 +40,12 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
       const data: Prisma.UserUpdateInput = updateUserDto;
-      return await this.prisma.user.update({ where: { id }, data });
+      const updatedUserAccount = await this.prisma.user.update({
+        where: { id },
+        data,
+      });
+      delete updatedUserAccount.password;
+      return updatedUserAccount;
     } catch (error) {
       throw error;
     }

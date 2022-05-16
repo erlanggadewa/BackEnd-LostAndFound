@@ -72,7 +72,8 @@ model Post {
   socialMedia     String
   imgUrl          String[]
   date            String
-  activeStatus    Boolean?        @default(true)
+  activeStatus    Boolean         @default(true)
+  deleteStatus    Boolean         @default(false)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
