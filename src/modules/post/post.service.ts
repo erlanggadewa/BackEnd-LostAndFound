@@ -60,6 +60,7 @@ export class PostService {
         typePost: 'Lost',
         activeStatus: true,
         deleteStatus: false,
+        Questions: { some: { userId } },
       },
       include: {
         Questions: {
@@ -83,6 +84,7 @@ export class PostService {
         typePost: 'Found',
         activeStatus: true,
         deleteStatus: false,
+        Questions: { some: { Answers: { some: { userId } } } },
       },
       include: {
         Questions: {
