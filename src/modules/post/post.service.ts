@@ -121,7 +121,7 @@ export class PostService {
             typeQuestion: 'PostQuestion',
             statusQuestion: 'Waiting',
           },
-          include: { Answers: true },
+          include: { Answers: { where: { userId: { not: userId } } } },
         },
       },
     });
