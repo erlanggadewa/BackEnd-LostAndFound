@@ -113,9 +113,6 @@ export class PostService {
         typePost: 'Found',
         activeStatus: true,
         deleteStatus: false,
-        Questions: {
-          some: { Answers: { some: { statusAnswer: { not: 'Accepted' } } } },
-        },
       },
       include: {
         Questions: {
@@ -124,7 +121,14 @@ export class PostService {
             typeQuestion: 'PostQuestion',
             statusQuestion: 'Waiting',
           },
-          include: { Answers: { where: { userId: { not: userId } } } },
+          include: {
+            Answers: {
+              where: {
+                userId: { not: userId },
+                statusAnswer: { in: ['Waiting', 'Accepted'] },
+              },
+            },
+          },
         },
       },
     });
