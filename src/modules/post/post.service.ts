@@ -113,6 +113,9 @@ export class PostService {
         typePost: 'Found',
         activeStatus: true,
         deleteStatus: false,
+        Questions: {
+          some: { Answers: { some: { statusAnswer: { not: 'Accepted' } } } },
+        },
       },
       include: {
         Questions: {
