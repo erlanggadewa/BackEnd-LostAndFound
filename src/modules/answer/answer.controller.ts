@@ -22,7 +22,7 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  @Get(':answerId/questions/:questionId')
+  @Get(':answerId/questions/:questionId/accept')
   async rejectAnswerInFinishedPost(
     @Param('answerId', ParseUUIDPipe) answerId: string,
     @Param('questionId', ParseUUIDPipe) questionId: string,

@@ -119,7 +119,6 @@ export class PostService {
           where: {
             userId,
             typeQuestion: 'PostQuestion',
-            statusQuestion: 'Waiting',
           },
           include: {
             Answers: {
