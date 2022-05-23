@@ -43,6 +43,11 @@ export class AnswerService {
 
   async rejectAnswerInFinishedPost(answerId: string, questionId: string) {
     try {
+      await this.prisma.post.updateMany({
+        where: { Questions: { some: { id: questionId } } },
+        data: { activeStatus: false },
+      });
+
       await this.prisma.question.update({
         where: { id: questionId },
         data: { statusQuestion: 'Finished' },
