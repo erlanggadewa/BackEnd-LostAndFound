@@ -13,6 +13,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
+import { SetDonePostDto } from './dto/set-done-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostService } from './post.service';
 
@@ -22,6 +23,12 @@ import { PostService } from './post.service';
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
+
+  @Post('lost/set-finish')
+  async setLostPostToFinish(@Body() setDonePostDto: SetDonePostDto) {
+    const data = await this.postService.setLostPostToFinish(setDonePostDto);
+    return { message: 'Data modified successfully', data };
+  }
 
   @Get('my-post/found/:postId')
   findMyFoundPost(

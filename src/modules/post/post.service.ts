@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { SetDonePostDto } from './dto/set-done-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
@@ -60,7 +61,16 @@ export class PostService {
         typePost: 'Lost',
         activeStatus: true,
         deleteStatus: false,
-        Questions: { some: { userId } },
+        Questions: {
+          some: {
+            userId,
+            Answers: {
+              every: {
+                statusAnswer: { notIn: ['Finished', 'Rejected'] },
+              },
+            },
+          },
+        },
       },
       include: {
         Questions: {
@@ -71,7 +81,9 @@ export class PostService {
           },
           include: {
             Answers: {
-              where: { userId: { not: userId } },
+              where: {
+                userId: { not: userId },
+              },
             },
           },
         },
@@ -126,6 +138,7 @@ export class PostService {
                 userId: { not: userId },
                 statusAnswer: { in: ['Waiting', 'Accepted'] },
               },
+              include: { User: true },
             },
           },
         },
@@ -152,5 +165,31 @@ export class PostService {
         },
       },
     });
+  }
+
+  async setLostPostToFinish(setDonePostDto: SetDonePostDto) {
+    const { postId, questionId, answerId } = setDonePostDto;
+
+    try {
+      const post = await this.prisma.post.update({
+        where: { id: postId },
+        data: { activeStatus: false },
+      });
+      const question = await this.prisma.question.update({
+        where: { id: questionId },
+        data: { statusQuestion: 'Finished' },
+      });
+      const answer = await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { statusAnswer: 'Finished' },
+      });
+      return {
+        Post: { ...post },
+        Question: { ...question },
+        Answer: { ...answer },
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
