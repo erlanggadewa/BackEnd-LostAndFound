@@ -55,11 +55,11 @@ export class PostService {
 
   async findAllFollowingPost(userId: string) {
     // * Query posts that are not posted by users and posts containing questions or answers that belong to the user's own ID
+
     const lostPosts = await this.prisma.post.findMany({
       where: {
         userId: { not: userId },
         typePost: 'Lost',
-        activeStatus: true,
         deleteStatus: false,
         Questions: {
           some: {
@@ -87,6 +87,7 @@ export class PostService {
             },
           },
         },
+        User: true,
       },
     });
 
@@ -94,7 +95,6 @@ export class PostService {
       where: {
         userId: { not: userId },
         typePost: 'Found',
-        activeStatus: true,
         deleteStatus: false,
         Questions: { some: { Answers: { some: { userId } } } },
       },
@@ -111,10 +111,17 @@ export class PostService {
             },
           },
         },
+        User: true,
       },
     });
 
-    return lostPosts.concat(foundPosts);
+    // delete password field in mergePosts
+    const mergePosts = lostPosts.concat(foundPosts).map((post) => {
+      delete post.User.password;
+      return post;
+    });
+
+    return mergePosts;
   }
 
   async findMyFoundPost(postId: string, userId: string) {
@@ -138,7 +145,7 @@ export class PostService {
                 userId: { not: userId },
                 statusAnswer: { in: ['Waiting', 'Accepted'] },
               },
-              include: { User: true },
+              include: { User: { select: { password: false } } },
             },
           },
         },
@@ -175,17 +182,26 @@ export class PostService {
         where: { id: postId },
         data: { activeStatus: false },
       });
-      const question = await this.prisma.question.update({
+
+      const rejectedQuestions = await this.prisma.question.updateMany({
+        where: { id: { not: questionId }, postId },
+        data: { statusQuestion: 'Rejected' },
+      });
+
+      const acceptedQuestion = await this.prisma.question.update({
         where: { id: questionId },
         data: { statusQuestion: 'Finished' },
       });
+
       const answer = await this.prisma.answer.update({
         where: { id: answerId },
         data: { statusAnswer: 'Finished' },
       });
+
       return {
         Post: { ...post },
-        Question: { ...question },
+        AcceptedQuestion: { ...acceptedQuestion },
+        RejectedQuestions: { ...rejectedQuestions },
         Answer: { ...answer },
       };
     } catch (error) {
