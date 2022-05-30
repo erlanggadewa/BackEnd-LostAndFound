@@ -87,7 +87,7 @@ export class PostService {
             },
           },
         },
-        User: true,
+        User: { select: { email: true, name: true, imgUrl: true } },
       },
     });
 
@@ -111,21 +111,15 @@ export class PostService {
             },
           },
         },
-        User: true,
+        User: { select: { email: true, name: true, imgUrl: true } },
       },
     });
 
-    // delete password field in mergePosts
-    const mergePosts = lostPosts.concat(foundPosts).map((post) => {
-      delete post.User.password;
-      return post;
-    });
-
-    return mergePosts;
+    return lostPosts.concat(foundPosts);
   }
 
   async findMyFoundPost(postId: string, userId: string) {
-    return await this.prisma.post.findFirst({
+    const foundPost = await this.prisma.post.findFirst({
       where: {
         id: postId,
         userId,
@@ -145,16 +139,20 @@ export class PostService {
                 userId: { not: userId },
                 statusAnswer: { in: ['Waiting', 'Accepted'] },
               },
-              include: { User: { select: { password: false } } },
+              include: {
+                User: { select: { email: true, name: true, imgUrl: true } },
+              },
             },
           },
         },
       },
     });
+
+    return foundPost;
   }
 
   async findMyLostPost(postId: string, userId: string) {
-    return await this.prisma.post.findFirst({
+    const lostPost = await this.prisma.post.findFirst({
       where: {
         id: postId,
         userId,
@@ -169,9 +167,14 @@ export class PostService {
             typeQuestion: 'UserQuestion',
             statusQuestion: 'Waiting',
           },
+          include: {
+            User: { select: { email: true, name: true, imgUrl: true } },
+          },
         },
       },
     });
+
+    return lostPost;
   }
 
   async setLostPostToFinish(setDonePostDto: SetDonePostDto) {
