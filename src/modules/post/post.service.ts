@@ -196,16 +196,22 @@ export class PostService {
         data: { statusQuestion: 'Finished' },
       });
 
-      const answer = await this.prisma.answer.update({
+      const finishedAnswer = await this.prisma.answer.update({
         where: { id: answerId },
         data: { statusAnswer: 'Finished' },
+      });
+
+      const rejectedAnswer = await this.prisma.answer.updateMany({
+        where: { id: { not: answerId } },
+        data: { statusAnswer: 'Rejected' },
       });
 
       return {
         Post: { ...post },
         AcceptedQuestion: { ...acceptedQuestion },
         RejectedQuestions: { ...rejectedQuestions },
-        Answer: { ...answer },
+        FinishedAnswer: { ...finishedAnswer },
+        RejectedAnswer: { ...rejectedAnswer },
       };
     } catch (error) {
       throw error;
