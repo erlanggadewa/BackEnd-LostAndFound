@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { SetAcceptPostDto } from './dto/set-accept-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
 import { SetRejectPostDto } from './dto/set-reject-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -240,7 +241,7 @@ export class PostService {
       throw error;
     }
   }
-  async setFoundPostToFinish(setDonePostDto: SetDonePostDto) {
+  async setFoundPostToAccept(setDonePostDto: SetDonePostDto) {
     try {
       const { postId, questionId, answerId } = setDonePostDto;
 
@@ -268,6 +269,28 @@ export class PostService {
         FinishedQuestions: { ...finishedQuestions },
         AcceptedAnswer: { ...acceptedAnswer },
         RejectedAnswers: { ...rejectedAnswers },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async setFoundPostToFinish(setAcceptPostDto: SetAcceptPostDto) {
+    try {
+      const { postId, questionId } = setAcceptPostDto;
+
+      const finishedPost = await this.prisma.post.update({
+        where: { id: postId },
+        data: { activeStatus: false },
+      });
+
+      const finishedQuestion = await this.prisma.question.update({
+        where: { id: questionId },
+        data: { statusQuestion: 'Finished' },
+      });
+      return {
+        FinishedPost: { ...finishedPost },
+        FinishedQuestion: { ...finishedQuestion },
       };
     } catch (error) {
       throw error;

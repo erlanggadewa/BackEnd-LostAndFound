@@ -8,11 +8,12 @@ import {
   Patch,
   Post,
   Request,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
+import { SetAcceptPostDto } from './dto/set-accept-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
 import { SetRejectPostDto } from './dto/set-reject-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -37,14 +38,25 @@ export class PostController {
     return { message: 'Data modified successfully', data };
   }
 
+  @Post('found/set-accept')
+  @ApiOperation({
+    description:
+      "API for the founder accept the another user's answer and reject all answers of the other user with not accepted answer",
+    summary: "API for the founder accept the another user's answer",
+  })
+  async setFoundPostToAccept(@Body() setDonePostDto: SetDonePostDto) {
+    const data = await this.postService.setFoundPostToAccept(setDonePostDto);
+    return { message: 'Data modified successfully', data };
+  }
+
   @Post('found/set-finish')
   @ApiOperation({
     description:
-      'Close case of lost post and set some field to done when the answer is valid, so it will not appear in the search results',
-    summary: 'Set found post to finish',
+      "API for the founder accept the another user's answer and reject all answers of the other user with not accepted answer",
+    summary: "API for the founder accept the another user's answer",
   })
-  async setFoundPostToFinish(@Body() setDonePostDto: SetDonePostDto) {
-    const data = await this.postService.setFoundPostToFinish(setDonePostDto);
+  async setFoundPostToFinish(@Body() setAcceptPostDto: SetAcceptPostDto) {
+    const data = await this.postService.setFoundPostToFinish(setAcceptPostDto);
     return { message: 'Data modified successfully', data };
   }
 
