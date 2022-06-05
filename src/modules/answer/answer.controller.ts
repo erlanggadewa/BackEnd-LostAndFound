@@ -22,7 +22,6 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  @Get(':answerId/questions/:questionId/accept')
   @Post()
   async create(@Body() createAnswerDto: CreateAnswerDto) {
     const data = await this.answerService.create(createAnswerDto);
