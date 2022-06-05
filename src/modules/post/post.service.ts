@@ -251,7 +251,7 @@ export class PostService {
 
       const finishedQuestions = await this.prisma.question.update({
         where: { id: questionId },
-        data: { statusQuestion: 'Finished' },
+        data: { statusQuestion: 'Answered' },
       });
 
       const acceptedAnswer = await this.prisma.answer.update({
