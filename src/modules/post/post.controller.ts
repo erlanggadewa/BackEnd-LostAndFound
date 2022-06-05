@@ -51,9 +51,8 @@ export class PostController {
 
   @Post('found/set-finish')
   @ApiOperation({
-    description:
-      "API for the founder accept the another user's answer and reject all answers of the other user with not accepted answer",
-    summary: "API for the founder accept the another user's answer",
+    summary:
+      'API for the owner collect info contact of the founder and set finish the post',
   })
   async setFoundPostToFinish(@Body() setAcceptPostDto: SetAcceptPostDto) {
     const data = await this.postService.setFoundPostToFinish(setAcceptPostDto);
