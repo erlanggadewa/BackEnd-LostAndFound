@@ -7,12 +7,14 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
+import { FilterSearchPostDto } from './dto/search-lost-post.dto';
 import { SetAcceptPostDto } from './dto/set-accept-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
 import { SetRejectPostDto } from './dto/set-reject-post.dto';
@@ -25,6 +27,38 @@ import { PostService } from './post.service';
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
+
+  @Get('lost/search')
+  @ApiOperation({
+    summary: 'Get all lost posts with given filter keyword',
+    description:
+      'Filter keyword which can be use is only title, description, chronology',
+  })
+  searchLostPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
+    return this.postService.searchLostPost(filterSearchPostDto);
+  }
+
+  @Get('found/search')
+  @ApiOperation({
+    summary: 'Get all found posts with given filter keyword',
+    description:
+      'Filter keyword which can be use is only title, description, chronology',
+  })
+  searchFoundPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
+    return this.postService.searchFoundPost(filterSearchPostDto);
+  }
+
+  @Get('news/found')
+  @ApiOperation({ summary: 'Get all found post for news tab' })
+  getNewsFoundPosts() {
+    return this.postService.getNewsFoundPosts();
+  }
+
+  @Get('news/lost')
+  @ApiOperation({ summary: 'Get all lost post for news tab' })
+  getNewsLostPosts() {
+    return this.postService.getNewsLostPosts();
+  }
 
   @Post('lost/set-finish')
   async setLostPostToFinish(@Body() setDonePostDto: SetDonePostDto) {

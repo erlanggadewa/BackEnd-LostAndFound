@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { FilterSearchPostDto } from './dto/search-lost-post.dto';
 import { SetAcceptPostDto } from './dto/set-accept-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
 import { SetRejectPostDto } from './dto/set-reject-post.dto';
@@ -52,6 +53,7 @@ export class PostService {
   async findAllUserPosts(userId: string) {
     return await this.prisma.post.findMany({
       where: { userId, activeStatus: true, deleteStatus: false },
+      orderBy: { updatedAt: 'desc' },
     });
   }
 
@@ -74,6 +76,7 @@ export class PostService {
           },
         },
       },
+      orderBy: { updatedAt: 'desc' },
       include: {
         Questions: {
           where: {
@@ -100,6 +103,7 @@ export class PostService {
         deleteStatus: false,
         Questions: { some: { Answers: { some: { userId } } } },
       },
+      orderBy: { updatedAt: 'desc' },
       include: {
         Questions: {
           where: {
@@ -129,6 +133,7 @@ export class PostService {
         activeStatus: true,
         deleteStatus: false,
       },
+      orderBy: { updatedAt: 'desc' },
       include: {
         Questions: {
           where: {
@@ -162,6 +167,7 @@ export class PostService {
         activeStatus: true,
         deleteStatus: false,
       },
+      orderBy: { updatedAt: 'desc' },
       include: {
         Questions: {
           where: {
@@ -295,5 +301,79 @@ export class PostService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getNewsFoundPosts() {
+    return await this.prisma.post.findMany({
+      where: { typePost: 'Found', activeStatus: true, deleteStatus: false },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async getNewsLostPosts() {
+    return await this.prisma.post.findMany({
+      where: { typePost: 'Lost', activeStatus: true, deleteStatus: false },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async searchLostPost(filterSearchPostDto: FilterSearchPostDto) {
+    return await this.prisma.post.findMany({
+      where: {
+        typePost: 'Lost',
+        activeStatus: true,
+        deleteStatus: false,
+        OR: [
+          {
+            title: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+          {
+            chronology: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  async searchFoundPost(filterSearchPostDto: FilterSearchPostDto) {
+    return await this.prisma.post.findMany({
+      where: {
+        typePost: 'Found',
+        activeStatus: true,
+        deleteStatus: false,
+        OR: [
+          {
+            title: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+          {
+            chronology: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+    });
   }
 }
