@@ -114,4 +114,31 @@ export class PostLostService {
       throw error;
     }
   }
+
+  async findMyLostPost(postId: string, userId: string) {
+    const lostPost = await this.prisma.post.findFirst({
+      where: {
+        id: postId,
+        userId,
+        typePost: 'Lost',
+        activeStatus: true,
+        deleteStatus: false,
+      },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        Questions: {
+          where: {
+            userId: { not: userId },
+            typeQuestion: 'UserQuestion',
+            statusQuestion: 'Waiting',
+          },
+          include: {
+            User: { select: { email: true, name: true, imgUrl: true } },
+          },
+        },
+      },
+    });
+
+    return lostPost;
+  }
 }

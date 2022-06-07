@@ -23,32 +23,6 @@ import { PostService } from './post.service';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Get('my-post/found/:postId')
-  @ApiOperation({
-    description:
-      'Find detail of selected posts made by user which have type found',
-    summary: 'Find my found post',
-  })
-  findMyFoundPost(
-    @Param('postId', ParseUUIDPipe) postId: string,
-    @Request() req: any,
-  ) {
-    return this.postService.findMyFoundPost(postId, req.user.userId);
-  }
-
-  @Get('my-post/lost/:postId')
-  @ApiOperation({
-    description:
-      'Find detail of selected posts made by user which have type lost',
-    summary: 'Find my lost post',
-  })
-  findMyLostPost(
-    @Param('postId', ParseUUIDPipe) postId: string,
-    @Request() req: any,
-  ) {
-    return this.postService.findMyLostPost(postId, req.user.userId);
-  }
-
   @Get('/my-post')
   @ApiOperation({
     description: "Find all user's posts based on the current logged userId",

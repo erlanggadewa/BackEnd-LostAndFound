@@ -120,67 +120,6 @@ export class PostService {
     return lostPosts.concat(foundPosts);
   }
 
-  async findMyFoundPost(postId: string, userId: string) {
-    const foundPost = await this.prisma.post.findFirst({
-      where: {
-        id: postId,
-        userId,
-        typePost: 'Found',
-        activeStatus: true,
-        deleteStatus: false,
-      },
-      orderBy: { updatedAt: 'desc' },
-      include: {
-        Questions: {
-          where: {
-            userId,
-            typeQuestion: 'PostQuestion',
-          },
-          include: {
-            Answers: {
-              where: {
-                userId: { not: userId },
-                statusAnswer: { in: ['Waiting', 'Accepted'] },
-              },
-              include: {
-                User: { select: { email: true, name: true, imgUrl: true } },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return foundPost;
-  }
-
-  async findMyLostPost(postId: string, userId: string) {
-    const lostPost = await this.prisma.post.findFirst({
-      where: {
-        id: postId,
-        userId,
-        typePost: 'Lost',
-        activeStatus: true,
-        deleteStatus: false,
-      },
-      orderBy: { updatedAt: 'desc' },
-      include: {
-        Questions: {
-          where: {
-            userId: { not: userId },
-            typeQuestion: 'UserQuestion',
-            statusQuestion: 'Waiting',
-          },
-          include: {
-            User: { select: { email: true, name: true, imgUrl: true } },
-          },
-        },
-      },
-    });
-
-    return lostPost;
-  }
-
   async getNewsFoundPosts() {
     return await this.prisma.post.findMany({
       where: { typePost: 'Found', activeStatus: true, deleteStatus: false },

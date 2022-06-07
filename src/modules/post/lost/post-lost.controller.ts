@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
@@ -12,6 +22,19 @@ import { PostLostService } from './post-lost.service';
 @Controller('posts/lost')
 export class PostLostController {
   constructor(private readonly postLostService: PostLostService) {}
+
+  @Get('lost/my-post/:postId')
+  @ApiOperation({
+    description:
+      'Find detail of selected posts made by user which have type lost',
+    summary: 'Find my lost post',
+  })
+  findMyLostPost(
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Request() req: any,
+  ) {
+    return this.postLostService.findMyLostPost(postId, req.user.userId);
+  }
 
   @Get('lost/search')
   @ApiOperation({

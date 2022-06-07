@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
@@ -12,6 +22,20 @@ import { PostFoundService } from './post-found.service';
 @Controller('posts/found')
 export class PostFoundController {
   constructor(private readonly postFoundService: PostFoundService) {}
+
+  @Get('found/my-post/:postId')
+  @ApiOperation({
+    description:
+      'Find detail of selected posts made by user which have type found',
+    summary: 'Find my found post',
+  })
+  findMyFoundPost(
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Request() req: any,
+  ) {
+    return this.postFoundService.findMyFoundPost(postId, req.user.userId);
+  }
+
   @Get('news')
   @ApiOperation({ summary: 'Get all found post for news tab' })
   getNewsFoundPosts() {

@@ -127,4 +127,38 @@ export class PostFoundService {
       orderBy: { updatedAt: 'desc' },
     });
   }
+
+  async findMyFoundPost(postId: string, userId: string) {
+    const foundPost = await this.prisma.post.findFirst({
+      where: {
+        id: postId,
+        userId,
+        typePost: 'Found',
+        activeStatus: true,
+        deleteStatus: false,
+      },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        Questions: {
+          where: {
+            userId,
+            typeQuestion: 'PostQuestion',
+          },
+          include: {
+            Answers: {
+              where: {
+                userId: { not: userId },
+                statusAnswer: { in: ['Waiting', 'Accepted'] },
+              },
+              include: {
+                User: { select: { email: true, name: true, imgUrl: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return foundPost;
+  }
 }
