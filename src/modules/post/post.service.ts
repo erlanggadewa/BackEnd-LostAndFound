@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { RejectAnswerPostDto } from './dto/reject-answer-post.dto';
 import { FilterSearchPostDto } from './dto/search-lost-post.dto';
 import { SetAcceptPostDto } from './dto/set-accept-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
@@ -375,5 +376,17 @@ export class PostService {
         ],
       },
     });
+  }
+
+  async setFoundPostToReject(rejectAnswerPostDto: RejectAnswerPostDto) {
+    try {
+      const { answerId } = rejectAnswerPostDto;
+      return await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { statusAnswer: 'Rejected' },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 }
