@@ -7,16 +7,12 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
-import { FilterSearchPostDto } from './dto/search-post.dto';
-import { SetDonePostDto } from './dto/set-done-post.dto';
-import { SetRejectPostDto } from './dto/set-reject-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostService } from './post.service';
 
@@ -26,50 +22,6 @@ import { PostService } from './post.service';
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
-
-  @Get('lost/search')
-  @ApiOperation({
-    summary: 'Get all lost posts with given filter keyword',
-    description:
-      'Filter keyword which can be use is only title, description, chronology',
-  })
-  searchLostPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
-    return this.postService.searchLostPost(filterSearchPostDto);
-  }
-
-  @Get('news/found')
-  @ApiOperation({ summary: 'Get all found post for news tab' })
-  getNewsFoundPosts() {
-    return this.postService.getNewsFoundPosts();
-  }
-
-  @Get('news/lost')
-  @ApiOperation({ summary: 'Get all lost post for news tab' })
-  getNewsLostPosts() {
-    return this.postService.getNewsLostPosts();
-  }
-
-  @Post('lost/finish')
-  @ApiOperation({
-    summary: 'API for to accept the claimer answer',
-    description:
-      'This API will close the post, make it become not visible again in news search, and put this post into history',
-  })
-  async setLostPostToFinish(@Body() setDonePostDto: SetDonePostDto) {
-    const data = await this.postService.setLostPostToFinish(setDonePostDto);
-    return { message: 'Data modified successfully', data };
-  }
-
-  @Post('lost/reject')
-  @ApiOperation({
-    summary: 'API for to reject the post maker answer',
-    description:
-      'This API will reject the answer we give to the creator of the lost post',
-  })
-  async setLostPostToReject(@Body() setRejectPostDto: SetRejectPostDto) {
-    const data = await this.postService.setLostPostToReject(setRejectPostDto);
-    return { message: 'Data modified successfully', data };
-  }
 
   @Get('my-post/found/:postId')
   @ApiOperation({

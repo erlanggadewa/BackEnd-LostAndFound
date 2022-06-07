@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from '../dto/search-post.dto';
-import { AcceptFoundPostDto } from './dto/accept-found-post.dto';
-import { DoneFoundPostDto } from './dto/done-found-post.dto';
 import { RejectAnswerFoundPostDto } from './dto/reject-answer-found-post.dto';
 import { PostFoundService } from './post-found.service';
 
@@ -13,6 +12,11 @@ import { PostFoundService } from './post-found.service';
 @Controller('posts/found')
 export class PostFoundController {
   constructor(private readonly postFoundService: PostFoundService) {}
+  @Get('news')
+  @ApiOperation({ summary: 'Get all found post for news tab' })
+  getNewsFoundPosts() {
+    return this.postFoundService.getNewsFoundPosts();
+  }
 
   @Get('search')
   @ApiOperation({
@@ -30,7 +34,7 @@ export class PostFoundController {
       "API for the founder accept the another user's answer and reject all answers of the other user with not accepted answer",
     summary: "API for the founder accept the another user's answer",
   })
-  async setFoundPostToAccept(@Body() donePostDto: DoneFoundPostDto) {
+  async setFoundPostToAccept(@Body() donePostDto: DonePostDto) {
     const data = await this.postFoundService.setFoundPostToAccept(donePostDto);
     return { message: 'Data modified successfully', data };
   }
@@ -42,10 +46,8 @@ export class PostFoundController {
     description:
       'This API will close the post, make it become not visible again in news search, and put this post into history',
   })
-  async setFoundPostToFinish(@Body() acceptPostDto: AcceptFoundPostDto) {
-    const data = await this.postFoundService.setFoundPostToFinish(
-      acceptPostDto,
-    );
+  async setFoundPostToFinish(@Body() donePostDto: DonePostDto) {
+    const data = await this.postFoundService.setFoundPostToFinish(donePostDto);
     return { message: 'Data modified successfully', data };
   }
 

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class AcceptFoundPostDto {
+export class DonePostDto {
   @IsUUID()
   @IsNotEmpty()
   postId: string;
@@ -8,4 +8,8 @@ export class AcceptFoundPostDto {
   @IsUUID()
   @IsNotEmpty()
   questionId: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  answerId: string;
 }

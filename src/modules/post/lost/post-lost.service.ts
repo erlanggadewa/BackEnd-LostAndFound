@@ -1,0 +1,117 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { DonePostDto } from '../dto/done-post.dto';
+import { FilterSearchPostDto } from '../dto/search-post.dto';
+import { RejectAnswerLostPostDto } from './dto/reject-answer-found-post.dto';
+
+@Injectable()
+export class PostLostService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getNewsFoundPosts() {
+    return await this.prisma.post.findMany({
+      where: { typePost: 'Found', activeStatus: true, deleteStatus: false },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async searchLostPost(filterSearchPostDto: FilterSearchPostDto) {
+    return await this.prisma.post.findMany({
+      where: {
+        typePost: 'Lost',
+        activeStatus: true,
+        deleteStatus: false,
+        OR: [
+          {
+            title: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+          {
+            chronology: {
+              contains: filterSearchPostDto.filter,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  async getNewsLostPosts() {
+    return await this.prisma.post.findMany({
+      where: { typePost: 'Lost', activeStatus: true, deleteStatus: false },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async setLostPostToFinish(donePostDto: DonePostDto) {
+    const { postId, questionId, answerId } = donePostDto;
+
+    try {
+      const finishedPost = await this.prisma.post.update({
+        where: { id: postId },
+        data: { activeStatus: false },
+      });
+
+      const rejectedQuestions = await this.prisma.question.updateMany({
+        where: { id: { not: questionId }, postId },
+        data: { statusQuestion: 'Rejected' },
+      });
+
+      const finishedQuestions = await this.prisma.question.update({
+        where: { id: questionId },
+        data: { statusQuestion: 'Finished' },
+      });
+
+      const finishedAnswer = await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { statusAnswer: 'Finished' },
+      });
+
+      const rejectedAnswer = await this.prisma.answer.updateMany({
+        where: { id: { not: answerId } },
+        data: { statusAnswer: 'Rejected' },
+      });
+
+      return {
+        FinishedPost: { ...finishedPost },
+        FinishedQuestions: { ...finishedQuestions },
+        RejectedQuestions: { ...rejectedQuestions },
+        FinishedAnswer: { ...finishedAnswer },
+        RejectedAnswer: { ...rejectedAnswer },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async setLostPostToReject(rejectAnswerLostPostDto: RejectAnswerLostPostDto) {
+    try {
+      const { answerId, questionId } = rejectAnswerLostPostDto;
+
+      const rejectedAnswer = await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { statusAnswer: 'Rejected' },
+      });
+
+      const rejectedQuestion = await this.prisma.question.update({
+        where: { id: questionId },
+        data: { statusQuestion: 'Rejected' },
+      });
+
+      return {
+        RejectedAnswer: { ...rejectedAnswer },
+        RejectedQuestion: { ...rejectedQuestion },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+}

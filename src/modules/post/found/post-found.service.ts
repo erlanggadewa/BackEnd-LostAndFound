@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from '../dto/search-post.dto';
-import { AcceptFoundPostDto } from './dto/accept-found-post.dto';
-import { DoneFoundPostDto } from './dto/done-found-post.dto';
 import { RejectAnswerFoundPostDto } from './dto/reject-answer-found-post.dto';
 
 @Injectable()
 export class PostFoundService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async setFoundPostToAccept(DonePostDto: DoneFoundPostDto) {
+  async setFoundPostToAccept(donePostDto: DonePostDto) {
     try {
-      const { postId, questionId, answerId } = DonePostDto;
+      const { postId, questionId, answerId } = donePostDto;
 
       const finishedPost = await this.prisma.post.update({
         where: { id: postId },
@@ -43,9 +42,9 @@ export class PostFoundService {
     }
   }
 
-  async setFoundPostToFinish(acceptPostDto: AcceptFoundPostDto) {
+  async setFoundPostToFinish(donePostDto: DonePostDto) {
     try {
-      const { postId, questionId } = acceptPostDto;
+      const { postId, questionId, answerId } = donePostDto;
 
       const finishedPost = await this.prisma.post.update({
         where: { id: postId },
@@ -56,9 +55,22 @@ export class PostFoundService {
         where: { id: questionId },
         data: { statusQuestion: 'Finished' },
       });
+
+      const acceptedAnswer = await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { statusAnswer: 'Finished' },
+      });
+
+      const rejectedAnswers = await this.prisma.answer.updateMany({
+        where: { id: { not: answerId } },
+        data: { statusAnswer: 'Rejected' },
+      });
+
       return {
         FinishedPost: { ...finishedPost },
         FinishedQuestion: { ...finishedQuestion },
+        AcceptedAnswer: { ...acceptedAnswer },
+        RejectedAnswers: { ...rejectedAnswers },
       };
     } catch (error) {
       throw error;
@@ -107,5 +119,12 @@ export class PostFoundService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getNewsFoundPosts() {
+    return await this.prisma.post.findMany({
+      where: { typePost: 'Found', activeStatus: true, deleteStatus: false },
+      orderBy: { updatedAt: 'desc' },
+    });
   }
 }
