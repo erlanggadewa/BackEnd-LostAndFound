@@ -14,9 +14,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
-import { RejectAnswerPostDto } from './dto/reject-answer-post.dto';
-import { FilterSearchPostDto } from './dto/search-lost-post.dto';
-import { SetAcceptPostDto } from './dto/set-accept-post.dto';
+import { FilterSearchPostDto } from './dto/search-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
 import { SetRejectPostDto } from './dto/set-reject-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -37,16 +35,6 @@ export class PostController {
   })
   searchLostPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
     return this.postService.searchLostPost(filterSearchPostDto);
-  }
-
-  @Get('found/search')
-  @ApiOperation({
-    summary: 'Get all found posts with given filter keyword',
-    description:
-      'Filter keyword which can be use is only title, description, chronology',
-  })
-  searchFoundPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
-    return this.postService.searchFoundPost(filterSearchPostDto);
   }
 
   @Get('news/found')
@@ -80,42 +68,6 @@ export class PostController {
   })
   async setLostPostToReject(@Body() setRejectPostDto: SetRejectPostDto) {
     const data = await this.postService.setLostPostToReject(setRejectPostDto);
-    return { message: 'Data modified successfully', data };
-  }
-
-  @Post('found/accept')
-  @ApiOperation({
-    description:
-      "API for the founder accept the another user's answer and reject all answers of the other user with not accepted answer",
-    summary: "API for the founder accept the another user's answer",
-  })
-  async setFoundPostToAccept(@Body() setDonePostDto: SetDonePostDto) {
-    const data = await this.postService.setFoundPostToAccept(setDonePostDto);
-    return { message: 'Data modified successfully', data };
-  }
-
-  @Post('found/finish')
-  @ApiOperation({
-    summary:
-      'API for the owner collect info contact of the founder and set finish the post',
-    description:
-      'This API will close the post, make it become not visible again in news search, and put this post into history',
-  })
-  async setFoundPostToFinish(@Body() setAcceptPostDto: SetAcceptPostDto) {
-    const data = await this.postService.setFoundPostToFinish(setAcceptPostDto);
-    return { message: 'Data modified successfully', data };
-  }
-
-  @Post('found/reject')
-  @ApiOperation({
-    summary: 'API for to reject the post maker answer',
-    description:
-      'This API will reject the answer we give to the creator of the found post',
-  })
-  async setFoundPostToReject(@Body() rejectAnswerPostDto: RejectAnswerPostDto) {
-    const data = await this.postService.setFoundPostToReject(
-      rejectAnswerPostDto,
-    );
     return { message: 'Data modified successfully', data };
   }
 

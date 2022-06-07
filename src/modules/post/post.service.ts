@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { RejectAnswerPostDto } from './dto/reject-answer-post.dto';
-import { FilterSearchPostDto } from './dto/search-lost-post.dto';
+import { FilterSearchPostDto } from './dto/search-post.dto';
 import { SetAcceptPostDto } from './dto/set-accept-post.dto';
 import { SetDonePostDto } from './dto/set-done-post.dto';
 import { SetRejectPostDto } from './dto/set-reject-post.dto';
