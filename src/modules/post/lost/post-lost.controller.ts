@@ -23,7 +23,7 @@ import { PostLostService } from './post-lost.service';
 export class PostLostController {
   constructor(private readonly postLostService: PostLostService) {}
 
-  @Get('lost/my-post/:postId')
+  @Get('my-post/:postId')
   @ApiOperation({
     description:
       'Find detail of selected posts made by user which have type lost',

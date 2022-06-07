@@ -23,7 +23,7 @@ import { PostFoundService } from './post-found.service';
 export class PostFoundController {
   constructor(private readonly postFoundService: PostFoundService) {}
 
-  @Get('found/my-post/:postId')
+  @Get('my-post/:postId')
   @ApiOperation({
     description:
       'Find detail of selected posts made by user which have type found',
