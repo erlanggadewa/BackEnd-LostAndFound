@@ -97,7 +97,12 @@ export class PostService {
         userId: { not: userId },
         typePost: 'Found',
         deleteStatus: false,
-        Questions: { some: { Answers: { some: { userId } } } },
+        Questions: {
+          some: {
+            statusQuestion: { not: 'Finished' },
+            Answers: { every: { userId, statusAnswer: { not: 'Finished' } } },
+          },
+        },
       },
       orderBy: { updatedAt: 'desc' },
       include: {
