@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from '../dto/search-post.dto';
@@ -38,8 +39,8 @@ export class PostFoundController {
 
   @Get('news')
   @ApiOperation({ summary: 'Get all found post for news tab' })
-  getNewsFoundPosts() {
-    return this.postFoundService.getNewsFoundPosts();
+  getNewsFoundPosts(@Query() paginationDto: PaginationDto) {
+    return this.postFoundService.getNewsFoundPosts(paginationDto);
   }
 
   @Get('search')

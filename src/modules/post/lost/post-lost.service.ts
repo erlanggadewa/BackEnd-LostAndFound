@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from '../dto/search-post.dto';
@@ -45,8 +46,10 @@ export class PostLostService {
     });
   }
 
-  async getNewsLostPosts() {
+  async getNewsLostPosts(paginationDto: PaginationDto) {
     return await this.prisma.post.findMany({
+      skip: paginationDto.offset,
+      take: paginationDto.limit,
       where: { typePost: 'Lost', activeStatus: true, deleteStatus: false },
       orderBy: { updatedAt: 'desc' },
     });

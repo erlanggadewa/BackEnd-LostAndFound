@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from './../dto/search-post.dto';
@@ -48,8 +49,8 @@ export class PostLostController {
 
   @Get('news')
   @ApiOperation({ summary: 'Get all lost post for news tab' })
-  getNewsLostPosts() {
-    return this.postLostService.getNewsLostPosts();
+  getNewsLostPosts(@Query() paginationDto: PaginationDto) {
+    return this.postLostService.getNewsLostPosts(paginationDto);
   }
 
   @Post('finish')
