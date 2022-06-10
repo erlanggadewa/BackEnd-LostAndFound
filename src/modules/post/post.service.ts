@@ -130,7 +130,6 @@ export class PostService {
 
     const lostPosts = await this.prisma.post.findMany({
       where: {
-        userId: { not: userId },
         typePost: 'Lost',
         activeStatus: false,
         deleteStatus: false,
@@ -169,13 +168,12 @@ export class PostService {
 
     const foundPosts = await this.prisma.post.findMany({
       where: {
-        userId: { not: userId },
         typePost: 'Found',
         activeStatus: false,
         deleteStatus: false,
         Questions: {
           some: {
-            statusQuestion: { in: ['Finished', 'Rejected'] },
+            statusQuestion: { in: ['Finished'] },
             typeQuestion: 'PostQuestion',
             Answers: {
               some: { userId, statusAnswer: { in: ['Finished', 'Rejected'] } },
@@ -189,7 +187,7 @@ export class PostService {
         Questions: {
           where: {
             typeQuestion: 'PostQuestion',
-            statusQuestion: { in: ['Finished', 'Rejected'] },
+            statusQuestion: { in: ['Finished'] },
           },
           include: {
             Answers: {

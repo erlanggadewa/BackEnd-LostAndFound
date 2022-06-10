@@ -32,6 +32,15 @@ export class PostController {
     return this.postService.findAllUserPosts(req.user.userId);
   }
 
+  @Get('/history')
+  @ApiOperation({
+    description:
+      "Find all user's history based on activity of the current logged userId",
+  })
+  findAllHistoryPost(@Request() req: any) {
+    return this.postService.findAllHistoryPost(req.user.userId);
+  }
+
   @Get('/following')
   @ApiOperation({
     description:
