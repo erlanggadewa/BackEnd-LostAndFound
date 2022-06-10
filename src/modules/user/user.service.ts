@@ -30,7 +30,15 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    return await this.prisma.user.findUnique({ where: { id } });
+    const data = await this.prisma.user.findUnique({ where: { id } });
+    delete data.password;
+    return data;
+  }
+
+  async getMyProfile(id: string) {
+    const data = await this.prisma.user.findUnique({ where: { id } });
+    delete data.password;
+    return data;
   }
 
   async findOneByEmail(email: string) {

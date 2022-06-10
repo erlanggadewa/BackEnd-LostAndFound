@@ -1,3 +1,18 @@
 {
-  "cSpell.words": ["Bakau", "Telu"]
+  "cSpell.words": ["Bakau", "Telu"],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true,
+    "**/.vscode": true,
+    ".vscode": true
+  },
+  "explorerExclude.backup": null
 }

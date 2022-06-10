@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
@@ -21,6 +22,11 @@ import { UserService } from './user.service';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('my-profile')
+  getMyProfile(@Request() req: any) {
+    return this.userService.getMyProfile(req.user.userId);
+  }
 
   @ApiExcludeEndpoint()
   @Post()
