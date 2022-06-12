@@ -64,8 +64,11 @@ export class PostService {
         Questions: {
           some: {
             userId,
+            typeQuestion: 'UserQuestion',
+            statusQuestion: { notIn: ['Finished', 'Rejected'] },
             Answers: {
               every: {
+                userId: { not: userId },
                 statusAnswer: { notIn: ['Finished', 'Rejected'] },
               },
             },
@@ -82,11 +85,7 @@ export class PostService {
             statusQuestion: { notIn: ['Finished', 'Rejected'] },
           },
           include: {
-            Answers: {
-              where: {
-                userId: { not: userId },
-              },
-            },
+            Answers: true,
           },
         },
       },
@@ -98,7 +97,8 @@ export class PostService {
         typePost: 'Found',
         deleteStatus: false,
         Questions: {
-          some: {
+          every: {
+            userId: { not: userId },
             statusQuestion: { not: 'Finished' },
             Answers: { every: { userId, statusAnswer: { not: 'Finished' } } },
           },
@@ -115,7 +115,10 @@ export class PostService {
           },
           include: {
             Answers: {
-              where: { userId },
+              where: {
+                userId,
+                statusAnswer: { notIn: ['Finished', 'Rejected'] },
+              },
             },
           },
         },
