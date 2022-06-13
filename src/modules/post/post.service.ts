@@ -131,8 +131,9 @@ export class PostService {
   async findAllHistoryPost(userId: string) {
     // * Query posts that are not posted by users and posts containing questions or answers that belong to the user's own ID and active status of post is false, means that post is done and case is closed
 
-    const lostPosts = await this.prisma.post.findMany({
+    const followingLostPosts = await this.prisma.post.findMany({
       where: {
+        userId: { not: userId },
         typePost: 'Lost',
         activeStatus: false,
         deleteStatus: false,
@@ -140,8 +141,10 @@ export class PostService {
           some: {
             userId,
             typeQuestion: 'UserQuestion',
+            statusQuestion: { in: ['Finished', 'Rejected'] },
             Answers: {
               some: {
+                userId: { not: userId },
                 statusAnswer: { in: ['Finished', 'Rejected'] },
               },
             },
@@ -169,7 +172,7 @@ export class PostService {
       },
     });
 
-    const foundPosts = await this.prisma.post.findMany({
+    const followingFoundPosts = await this.prisma.post.findMany({
       where: {
         typePost: 'Found',
         activeStatus: false,
@@ -201,6 +204,94 @@ export class PostService {
       },
     });
 
-    return lostPosts.concat(foundPosts);
+    const ownLostPosts = await this.prisma.post.findMany({
+      where: {
+        userId,
+        typePost: 'Lost',
+        activeStatus: false,
+        deleteStatus: false,
+        Questions: {
+          some: {
+            userId: { not: userId },
+            typeQuestion: 'UserQuestion',
+            statusQuestion: { in: ['Finished', 'Rejected'] },
+            Answers: {
+              some: {
+                userId,
+                statusAnswer: { in: ['Finished', 'Rejected'] },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        User: { select: { email: true, name: true, imgUrl: true } },
+        Questions: {
+          where: {
+            userId: { not: userId },
+            typeQuestion: 'UserQuestion',
+            statusQuestion: { in: ['Finished', 'Rejected'] },
+          },
+          include: {
+            Answers: {
+              where: {
+                userId,
+                statusAnswer: { in: ['Finished', 'Rejected'] },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const ownFoundPosts = await this.prisma.post.findMany({
+      where: {
+        userId,
+        typePost: 'Found',
+        activeStatus: false,
+        deleteStatus: false,
+        Questions: {
+          every: {
+            userId,
+            statusQuestion: { in: ['Finished'] },
+            typeQuestion: 'PostQuestion',
+            Answers: {
+              every: {
+                userId: { not: userId },
+                statusAnswer: { in: ['Finished', 'Rejected'] },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        User: { select: { email: true, name: true, imgUrl: true } },
+        Questions: {
+          where: {
+            userId,
+            typeQuestion: 'PostQuestion',
+            statusQuestion: { in: ['Finished'] },
+          },
+          include: {
+            Answers: {
+              where: {
+                userId: { not: userId },
+                statusAnswer: { in: ['Finished', 'Rejected'] },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // combine followingLostPosts, ownLostPosts, and foundPosts into a single JSON
+    return {
+      followingFoundPosts,
+      followingLostPosts,
+      ownLostPosts,
+      ownFoundPosts,
+    };
   }
 }
