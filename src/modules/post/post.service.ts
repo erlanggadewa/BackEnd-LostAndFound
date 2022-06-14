@@ -99,8 +99,11 @@ export class PostService {
         Questions: {
           every: {
             userId: { not: userId },
-            statusQuestion: { not: 'Finished' },
-            Answers: { every: { userId, statusAnswer: { not: 'Finished' } } },
+            statusQuestion: { notIn: ['Finished', 'Rejected'] },
+            Answers: {
+              some: { userId },
+              every: { statusAnswer: { notIn: ['Finished', 'Rejected'] } },
+            },
           },
         },
       },
