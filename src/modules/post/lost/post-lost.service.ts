@@ -9,13 +9,6 @@ import { RejectAnswerLostPostDto } from './dto/reject-answer-found-post.dto';
 export class PostLostService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getNewsFoundPosts() {
-    return await this.prisma.post.findMany({
-      where: { typePost: 'Found', activeStatus: true, deleteStatus: false },
-      orderBy: { updatedAt: 'desc' },
-    });
-  }
-
   async searchLostPost(filterSearchPostDto: FilterSearchPostDto) {
     return await this.prisma.post.findMany({
       where: {
@@ -52,6 +45,7 @@ export class PostLostService {
       take: paginationDto.limit,
       where: { typePost: 'Lost', activeStatus: true, deleteStatus: false },
       orderBy: { updatedAt: 'desc' },
+      include: { Questions: { include: { Answers: true } } },
     });
   }
 
@@ -95,6 +89,7 @@ export class PostLostService {
       throw error;
     }
   }
+
   async setLostPostToReject(rejectAnswerLostPostDto: RejectAnswerLostPostDto) {
     try {
       const { answerId, questionId } = rejectAnswerLostPostDto;

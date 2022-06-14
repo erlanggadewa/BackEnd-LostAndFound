@@ -152,24 +152,6 @@ export class PostService {
         },
       },
       orderBy: { updatedAt: 'desc' },
-      include: {
-        User: { select: { email: true, name: true, imgUrl: true } },
-        Questions: {
-          where: {
-            userId,
-            typeQuestion: 'UserQuestion',
-            statusQuestion: { in: ['Finished', 'Rejected'] },
-          },
-          include: {
-            Answers: {
-              where: {
-                userId: { not: userId },
-                statusAnswer: { in: ['Finished', 'Rejected'] },
-              },
-            },
-          },
-        },
-      },
     });
 
     const followingFoundPosts = await this.prisma.post.findMany({

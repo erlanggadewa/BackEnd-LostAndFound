@@ -128,6 +128,7 @@ export class PostFoundService {
       take: paginationDto.limit,
       where: { typePost: 'Found', activeStatus: true, deleteStatus: false },
       orderBy: { updatedAt: 'desc' },
+      include: { Questions: { include: { Answers: true } } },
     });
   }
 
