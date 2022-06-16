@@ -14,6 +14,7 @@ import { PaginationDto } from 'src/common/global-dto/pagination.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from './../dto/search-post.dto';
+import { InsertAnswerLostPostDto } from './dto/insert-answer-lost-post.dto';
 import { RejectAnswerLostPostDto } from './dto/reject-answer-found-post.dto';
 import { PostLostService } from './post-lost.service';
 
@@ -23,6 +24,19 @@ import { PostLostService } from './post-lost.service';
 @Controller('posts/lost')
 export class PostLostController {
   constructor(private readonly postLostService: PostLostService) {}
+
+  @Post('answer')
+  @ApiOperation({
+    description:
+      'Insert answer to lost post. Set statusAnswer to Waiting and set statusQuestion to Answered',
+    summary: 'answer the lost post question',
+  })
+  answerLostPost(
+    @Body() insertAnswerLostPostDto: InsertAnswerLostPostDto,
+    @User('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.postLostService.answerLostPost(insertAnswerLostPostDto, userId);
+  }
 
   @Get('my-post/:postId')
   @ApiOperation({
@@ -37,14 +51,17 @@ export class PostLostController {
     return this.postLostService.findMyLostPost(postId, userId);
   }
 
-  @Get('lost/search')
+  @Get('search')
   @ApiOperation({
     summary: 'Get all lost posts with given filter keyword',
     description:
       'Filter keyword which can be use is only title, description, chronology',
   })
-  searchLostPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
-    return this.postLostService.searchLostPost(filterSearchPostDto);
+  searchLostPost(
+    @Query() filterSearchPostDto: FilterSearchPostDto,
+    @User('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.postLostService.searchLostPost(filterSearchPostDto, userId);
   }
 
   @Get('news')

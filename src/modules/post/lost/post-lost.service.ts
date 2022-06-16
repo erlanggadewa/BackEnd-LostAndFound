@@ -3,13 +3,17 @@ import { PaginationDto } from 'src/common/global-dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DonePostDto } from '../dto/done-post.dto';
 import { FilterSearchPostDto } from '../dto/search-post.dto';
+import { InsertAnswerLostPostDto } from './dto/insert-answer-lost-post.dto';
 import { RejectAnswerLostPostDto } from './dto/reject-answer-found-post.dto';
 
 @Injectable()
 export class PostLostService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async searchLostPost(filterSearchPostDto: FilterSearchPostDto) {
+  async searchLostPost(
+    filterSearchPostDto: FilterSearchPostDto,
+    userId: string,
+  ) {
     return await this.prisma.post.findMany({
       where: {
         typePost: 'Lost',
@@ -36,6 +40,13 @@ export class PostLostService {
           },
         ],
       },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        Questions: {
+          where: { userId },
+          include: { Answers: true },
+        },
+      },
     });
   }
 
@@ -47,8 +58,8 @@ export class PostLostService {
       orderBy: { updatedAt: 'desc' },
       include: {
         Questions: {
-          where: { userId: { not: userId } },
-          include: { Answers: { where: { userId } } },
+          where: { userId },
+          include: { Answers: true },
         },
       },
     });
@@ -79,7 +90,7 @@ export class PostLostService {
       });
 
       const rejectedAnswer = await this.prisma.answer.updateMany({
-        where: { id: { not: answerId } },
+        where: { id: { not: answerId }, questionId },
         data: { statusAnswer: 'Rejected' },
       });
 
@@ -143,5 +154,27 @@ export class PostLostService {
     });
 
     return lostPost;
+  }
+
+  async answerLostPost(
+    insertAnswerLostPostDto: InsertAnswerLostPostDto,
+    userId: string,
+  ) {
+    try {
+      const { questionId, answer } = insertAnswerLostPostDto;
+
+      const insertedAnswer = await this.prisma.answer.create({
+        data: { questionId, userId, answer, statusAnswer: 'Waiting' },
+      });
+
+      const updatedQuestion = await this.prisma.question.update({
+        where: { id: questionId },
+        data: { statusQuestion: 'Answered' },
+      });
+
+      return { insertedAnswer, updatedQuestion };
+    } catch (error) {
+      throw error;
+    }
   }
 }

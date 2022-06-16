@@ -63,7 +63,7 @@ export class PostFoundService {
       });
 
       const rejectedAnswers = await this.prisma.answer.updateMany({
-        where: { id: { not: answerId } },
+        where: { id: { not: answerId }, questionId },
         data: { statusAnswer: 'Rejected' },
       });
 
@@ -78,7 +78,10 @@ export class PostFoundService {
     }
   }
 
-  async searchFoundPost(filterSearchPostDto: FilterSearchPostDto) {
+  async searchFoundPost(
+    filterSearchPostDto: FilterSearchPostDto,
+    userId: string,
+  ) {
     return await this.prisma.post.findMany({
       where: {
         typePost: 'Found',
@@ -105,6 +108,13 @@ export class PostFoundService {
           },
         ],
       },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        Questions: {
+          where: { userId: { not: userId } },
+          include: { Answers: { where: { userId } } },
+        },
+      },
     });
   }
 
@@ -130,8 +140,8 @@ export class PostFoundService {
       orderBy: { updatedAt: 'desc' },
       include: {
         Questions: {
-          where: { userId },
-          include: { Answers: { where: { userId: { not: userId } } } },
+          where: { userId: { not: userId } },
+          include: { Answers: { where: { userId } } },
         },
       },
     });

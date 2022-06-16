@@ -52,8 +52,11 @@ export class PostFoundController {
     description:
       'Filter keyword which can be use is only title, description, chronology',
   })
-  searchFoundPost(@Query() filterSearchPostDto: FilterSearchPostDto) {
-    return this.postFoundService.searchFoundPost(filterSearchPostDto);
+  searchFoundPost(
+    @Query() filterSearchPostDto: FilterSearchPostDto,
+    @User('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.postFoundService.searchFoundPost(filterSearchPostDto, userId);
   }
 
   @Post('accept')
