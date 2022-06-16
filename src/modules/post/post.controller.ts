@@ -7,10 +7,10 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/common/decorator/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -28,8 +28,8 @@ export class PostController {
     description: "Find all user's posts based on the current logged userId",
     summary: "Find all user's posts",
   })
-  findAllUserPosts(@Request() req: any) {
-    return this.postService.findAllUserPosts(req.user.userId);
+  findAllUserPosts(@User('userId', ParseUUIDPipe) userId: string) {
+    return this.postService.findAllUserPosts(userId);
   }
 
   @Get('/history')
@@ -37,8 +37,8 @@ export class PostController {
     description:
       "Find all user's history based on activity of the current logged userId",
   })
-  findAllHistoryPost(@Request() req: any) {
-    return this.postService.findAllHistoryPost(req.user.userId);
+  findAllHistoryPost(@User('userId', ParseUUIDPipe) userId: string) {
+    return this.postService.findAllHistoryPost(userId);
   }
 
   @Get('/following')
@@ -47,8 +47,8 @@ export class PostController {
       'Find all posts that user is following based on the current logged userId',
     summary: 'Find all posts that user is following',
   })
-  findAllFollowingPost(@Request() req: any) {
-    return this.postService.findAllFollowingPost(req.user.userId);
+  findAllFollowingPost(@User('userId', ParseUUIDPipe) userId: string) {
+    return this.postService.findAllFollowingPost(userId);
   }
 
   @Post()

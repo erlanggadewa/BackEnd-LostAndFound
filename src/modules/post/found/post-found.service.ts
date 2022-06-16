@@ -122,13 +122,18 @@ export class PostFoundService {
     }
   }
 
-  async getNewsFoundPosts(paginationDto: PaginationDto) {
+  async getNewsFoundPosts(paginationDto: PaginationDto, userId: string) {
     return await this.prisma.post.findMany({
       skip: paginationDto.offset,
       take: paginationDto.limit,
       where: { typePost: 'Found', activeStatus: true, deleteStatus: false },
       orderBy: { updatedAt: 'desc' },
-      include: { Questions: { include: { Answers: true } } },
+      include: {
+        Questions: {
+          where: { userId },
+          include: { Answers: { where: { userId: { not: userId } } } },
+        },
+      },
     });
   }
 

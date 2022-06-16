@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,9 +36,17 @@ export class UserService {
   }
 
   async getMyProfile(id: string) {
-    const data = await this.prisma.user.findUnique({ where: { id } });
+    const data = await this.prisma.user.findUnique({
+      where: { id },
+      include: { _count: { select: { Posts: true } } },
+    });
+
+    const totalPost: number = data._count.Posts;
     delete data.password;
-    return data;
+    delete data._count;
+    const finalData: User & { totalPost: number } = { ...data, totalPost };
+
+    return finalData;
   }
 
   async findOneByEmail(email: string) {

@@ -2,7 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
+import { LoginUserDto } from './dto/login-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +26,8 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
-    user = await this.userService.findOneByEmail(user.email);
+  async login(loginUserDto: LoginUserDto) {
+    const user = await this.userService.findOneByEmail(loginUserDto.email);
     const payload = { sub: user.id, email: user.email };
 
     return {
@@ -36,11 +39,12 @@ export class AuthService {
     };
   }
 
-  async register(user: any) {
-    if (user.password != user.confirmPassword) {
+  async register(registerUserDto: RegisterUserDto) {
+    if (registerUserDto.password != registerUserDto.confirmPassword) {
       throw new BadRequestException("Passwords doesn't not match");
     }
-    delete user.confirmPassword;
+    delete registerUserDto.confirmPassword;
+    const user: CreateUserDto = registerUserDto;
     return await this.userService.create(user);
   }
 }

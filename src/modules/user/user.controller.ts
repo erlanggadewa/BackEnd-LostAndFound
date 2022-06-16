@@ -7,10 +7,10 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/common/decorator/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,8 +24,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('my-profile')
-  getMyProfile(@Request() req: any) {
-    return this.userService.getMyProfile(req.user.userId);
+  getMyProfile(@User('userId', ParseUUIDPipe) userId: string) {
+    return this.userService.getMyProfile(userId);
   }
 
   @ApiExcludeEndpoint()
@@ -55,6 +55,7 @@ export class UserController {
     return { data, message: 'User updated successfully' };
   }
 
+  @ApiExcludeEndpoint()
   @Delete(':userId')
   async remove(@Param('userId', ParseUUIDPipe) userId: string) {
     const data = await this.userService.remove(userId);

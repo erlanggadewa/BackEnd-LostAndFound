@@ -39,13 +39,18 @@ export class PostLostService {
     });
   }
 
-  async getNewsLostPosts(paginationDto: PaginationDto) {
+  async getNewsLostPosts(paginationDto: PaginationDto, userId: string) {
     return await this.prisma.post.findMany({
       skip: paginationDto.offset,
       take: paginationDto.limit,
       where: { typePost: 'Lost', activeStatus: true, deleteStatus: false },
       orderBy: { updatedAt: 'desc' },
-      include: { Questions: { include: { Answers: true } } },
+      include: {
+        Questions: {
+          where: { userId: { not: userId } },
+          include: { Answers: { where: { userId } } },
+        },
+      },
     });
   }
 

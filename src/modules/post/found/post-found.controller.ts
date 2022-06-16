@@ -6,10 +6,10 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/common/decorator/user.decorator';
 import { PaginationDto } from 'src/common/global-dto/pagination.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
@@ -32,15 +32,18 @@ export class PostFoundController {
   })
   findMyFoundPost(
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Request() req: any,
+    @User('userId', ParseUUIDPipe) userId: string,
   ) {
-    return this.postFoundService.findMyFoundPost(postId, req.user.userId);
+    return this.postFoundService.findMyFoundPost(postId, userId);
   }
 
   @Get('news')
   @ApiOperation({ summary: 'Get all found post for news tab' })
-  getNewsFoundPosts(@Query() paginationDto: PaginationDto) {
-    return this.postFoundService.getNewsFoundPosts(paginationDto);
+  getNewsFoundPosts(
+    @Query() paginationDto: PaginationDto,
+    @User('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.postFoundService.getNewsFoundPosts(paginationDto, userId);
   }
 
   @Get('search')

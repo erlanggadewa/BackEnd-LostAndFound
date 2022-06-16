@@ -6,10 +6,10 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/common/decorator/user.decorator';
 import { PaginationDto } from 'src/common/global-dto/pagination.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { DonePostDto } from '../dto/done-post.dto';
@@ -32,9 +32,9 @@ export class PostLostController {
   })
   findMyLostPost(
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Request() req: any,
+    @User('userId', ParseUUIDPipe) userId: string,
   ) {
-    return this.postLostService.findMyLostPost(postId, req.user.userId);
+    return this.postLostService.findMyLostPost(postId, userId);
   }
 
   @Get('lost/search')
@@ -49,8 +49,11 @@ export class PostLostController {
 
   @Get('news')
   @ApiOperation({ summary: 'Get all lost post for news tab' })
-  getNewsLostPosts(@Query() paginationDto: PaginationDto) {
-    return this.postLostService.getNewsLostPosts(paginationDto);
+  getNewsLostPosts(
+    @Query() paginationDto: PaginationDto,
+    @User('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.postLostService.getNewsLostPosts(paginationDto, userId);
   }
 
   @Post('finish')

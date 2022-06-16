@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { FollowingPosts } from './dto/following-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
@@ -47,9 +48,38 @@ export class PostService {
   }
 
   async findAllUserPosts(userId: string) {
-    return await this.prisma.post.findMany({
+    const posts = await this.prisma.post.findMany({
       where: { userId, activeStatus: true, deleteStatus: false },
       orderBy: { updatedAt: 'desc' },
+      include: {
+        _count: {
+          select: { Questions: true },
+        },
+        Questions: { include: { _count: { select: { Answers: true } } } },
+      },
+    });
+
+    const followingPosts: FollowingPosts[] =
+      this.countTotalAnswerAndQuestion(posts);
+
+    return followingPosts;
+  }
+
+  private countTotalAnswerAndQuestion(posts): FollowingPosts[] {
+    return posts.map((post) => {
+      let totalQuestion = 0;
+      let totalAnswer = 0;
+
+      totalQuestion += post._count.Questions;
+
+      post.Questions.map((question) => {
+        totalAnswer += question._count.Answers;
+        return question;
+      });
+      delete post.Questions;
+      delete post._count;
+
+      return { ...post, totalQuestion, totalAnswer };
     });
   }
 
@@ -102,7 +132,7 @@ export class PostService {
             statusQuestion: { notIn: ['Finished', 'Rejected'] },
             Answers: {
               some: { userId },
-              every: { statusAnswer: { notIn: ['Finished', 'Rejected'] } },
+              every: { statusAnswer: { not: 'Finished' } },
             },
           },
         },
