@@ -171,33 +171,15 @@ export class PostService {
         activeStatus: false,
         deleteStatus: false,
         Questions: {
-          some: {
-            userId,
+          some: { userId },
+          every: {
             typeQuestion: 'UserQuestion',
             statusQuestion: { in: ['Finished', 'Rejected'] },
             Answers: {
-              some: {
+              every: {
                 userId: { not: userId },
                 statusAnswer: { in: ['Finished', 'Rejected'] },
               },
-            },
-          },
-        },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
-
-    const followingFoundPosts = await this.prisma.post.findMany({
-      where: {
-        typePost: 'Found',
-        activeStatus: false,
-        deleteStatus: false,
-        Questions: {
-          some: {
-            statusQuestion: { in: ['Finished'] },
-            typeQuestion: 'PostQuestion',
-            Answers: {
-              some: { userId, statusAnswer: { in: ['Finished', 'Rejected'] } },
             },
           },
         },
@@ -207,6 +189,46 @@ export class PostService {
         User: { select: { email: true, name: true, imgUrl: true } },
         Questions: {
           where: {
+            userId,
+            typeQuestion: 'UserQuestion',
+            statusQuestion: { in: ['Finished', 'Rejected'] },
+          },
+          include: {
+            Answers: {
+              where: {
+                userId: { not: userId },
+                statusAnswer: { in: ['Finished', 'Rejected'] },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const followingFoundPosts = await this.prisma.post.findMany({
+      where: {
+        userId: { not: userId },
+        typePost: 'Found',
+        activeStatus: false,
+        deleteStatus: false,
+        Questions: {
+          every: {
+            userId: { not: userId },
+            typeQuestion: 'PostQuestion',
+            statusQuestion: { in: ['Finished'] },
+            Answers: {
+              some: { userId },
+              every: { statusAnswer: { in: ['Finished', 'Rejected'] } },
+            },
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        User: { select: { email: true, name: true, imgUrl: true } },
+        Questions: {
+          where: {
+            userId: { not: userId },
             typeQuestion: 'PostQuestion',
             statusQuestion: { in: ['Finished'] },
           },
@@ -226,12 +248,12 @@ export class PostService {
         activeStatus: false,
         deleteStatus: false,
         Questions: {
-          some: {
+          every: {
             userId: { not: userId },
             typeQuestion: 'UserQuestion',
             statusQuestion: { in: ['Finished', 'Rejected'] },
             Answers: {
-              some: {
+              every: {
                 userId,
                 statusAnswer: { in: ['Finished', 'Rejected'] },
               },
@@ -269,8 +291,8 @@ export class PostService {
         Questions: {
           every: {
             userId,
-            statusQuestion: { in: ['Finished'] },
             typeQuestion: 'PostQuestion',
+            statusQuestion: { in: ['Finished'] },
             Answers: {
               every: {
                 userId: { not: userId },
@@ -301,7 +323,6 @@ export class PostService {
       },
     });
 
-    // combine followingLostPosts, ownLostPosts, and foundPosts into a single JSON
     return {
       followingFoundPosts,
       followingLostPosts,
