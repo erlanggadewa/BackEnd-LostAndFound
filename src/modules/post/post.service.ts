@@ -271,6 +271,7 @@ export class PostService {
             statusQuestion: { in: ['Finished', 'Rejected'] },
           },
           include: {
+            User: { select: { email: true, name: true, imgUrl: true } },
             Answers: {
               where: {
                 userId,
@@ -316,6 +317,9 @@ export class PostService {
               where: {
                 userId: { not: userId },
                 statusAnswer: { in: ['Finished', 'Rejected'] },
+              },
+              include: {
+                User: { select: { email: true, name: true, imgUrl: true } },
               },
             },
           },
