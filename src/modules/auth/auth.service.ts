@@ -32,6 +32,7 @@ export class AuthService {
 
     return {
       userId: user.id,
+      userRole: user.role,
       access_token: await this.jwtService.signAsync(payload, {
         expiresIn: '60s',
         secret: this.configService.get('JWT_SECRET'),
