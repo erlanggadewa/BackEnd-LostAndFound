@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { EmailConfirmationService } from '../email/email-confirmation.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -13,6 +14,7 @@ export class AuthService {
     private readonly userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
@@ -46,6 +48,10 @@ export class AuthService {
     }
     delete registerUserDto.confirmPassword;
     const user: CreateUserDto = registerUserDto;
-    return await this.userService.create(user);
+    await this.emailConfirmationService.sendVerificationLink(
+      registerUserDto.email,
+    );
+    return user;
+    // return await this.userService.create(user);
   }
 }

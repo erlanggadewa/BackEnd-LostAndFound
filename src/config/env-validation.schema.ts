@@ -16,4 +16,9 @@ export const envValidationSchema = Joi.object({
 
   // JWT SECRET KEY
   JWT_SECRET: Joi.string().required(),
+
+  // Nodemailer settings
+  EMAIL_SERVICE: Joi.string().required(),
+  EMAIL_USER: Joi.string().required(),
+  EMAIL_PASSWORD: Joi.string().required(),
 });
