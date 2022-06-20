@@ -10,6 +10,7 @@ import {
 } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
+import * as csurf from 'csurf';
 import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
@@ -41,6 +42,12 @@ async function bootstrap() {
       extended: true,
     }),
   );
+
+  // CSRF Protection
+  app.use(csurf());
+
+  // Compression
+  app.use(compression());
 
   // set CORS
   app.enableCors();

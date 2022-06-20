@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { TerminusModule } from '@nestjs/terminus';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { envValidationSchema } from './config/env-validation.schema';
 import { AnswerModule } from './modules/answer/answer.module';
@@ -16,6 +18,10 @@ import { PrismaModule } from './prisma/prisma.module';
       validationSchema: envValidationSchema,
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     TerminusModule,
     PrismaModule,
     UserModule,
@@ -25,5 +31,11 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
   ],
   controllers: [AppController],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
