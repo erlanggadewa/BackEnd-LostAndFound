@@ -44,20 +44,33 @@ enum StatusAnswer {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @default(User)
-  nim       String?
-  phone     String?
-  imgUrl    String?
+  id           String  @id @default(uuid())
+  email        String  @unique
+  name         String
+  password     String
+  role         Role    @default(User)
+  nim          String?
+  phone        String?
+  imgUrl       String?
+  activeStatus Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   Posts     Post[]
   Questions Question[]
   Answers   Answer[]
+  UserOtp   UserOtp[]
+}
+
+model UserOtp {
+  id     String @id @default(uuid())
+  User   User?  @relation(fields: [userId], references: [id])
+  userId String
+  otp    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Post {

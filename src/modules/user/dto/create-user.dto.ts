@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -38,4 +39,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   imgUrl?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  activeStatus?: boolean;
 }

@@ -43,15 +43,29 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto) {
+    const user: CreateUserDto = registerUserDto;
+    const userQuery = await this.userService.findOneByEmail(user.email);
+
+    if (userQuery) {
+      throw new BadRequestException('User already exists');
+    }
+
     if (registerUserDto.password != registerUserDto.confirmPassword) {
       throw new BadRequestException("Passwords doesn't not match");
     }
+
     delete registerUserDto.confirmPassword;
-    const user: CreateUserDto = registerUserDto;
-    await this.emailConfirmationService.sendVerificationLink(
-      registerUserDto.email,
+    const createdUser = await this.userService.create(user);
+    console.log(
+      '🚀 ~ file: auth.service.ts ~ line 59 ~ AuthService ~ register ~ createdUser',
+      createdUser,
     );
-    return user;
-    // return await this.userService.create(user);
+
+    await this.emailConfirmationService.sendVerificationLink({
+      userId: createdUser.id,
+      email: createdUser.email,
+    });
+
+    return createdUser;
   }
 }
