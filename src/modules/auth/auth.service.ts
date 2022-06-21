@@ -50,8 +50,8 @@ export class AuthService {
   async register(registerUserDto: RegisterUserDto) {
     const user: CreateUserDto = registerUserDto;
     const userQuery = await this.userService.findOneByEmail(user.email);
-    delete userQuery.password;
     if (userQuery) {
+      delete userQuery.password;
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: `User already exists`,
