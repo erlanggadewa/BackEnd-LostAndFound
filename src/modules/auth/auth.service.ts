@@ -56,10 +56,6 @@ export class AuthService {
 
     delete registerUserDto.confirmPassword;
     const createdUser = await this.userService.create(user);
-    console.log(
-      '🚀 ~ file: auth.service.ts ~ line 59 ~ AuthService ~ register ~ createdUser',
-      createdUser,
-    );
 
     await this.emailConfirmationService.sendVerificationLink({
       userId: createdUser.id,
