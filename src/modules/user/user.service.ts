@@ -1,7 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RecreatePasswordUserDto } from '../auth/dto/recreate-password-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -12,8 +18,8 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     try {
       const data: Prisma.UserCreateInput = createUserDto;
-      const saltOrRounds: string = await bcrypt.genSalt();
-      data.password = await bcrypt.hash(data.password, saltOrRounds);
+
+      data.password = await this.hashingPassword(data.password);
       const userAccount = await this.prisma.user.create({ data });
       delete userAccount.password;
       return userAccount;
@@ -23,6 +29,11 @@ export class UserService {
       }
       throw error;
     }
+  }
+
+  async hashingPassword(password: string) {
+    const saltOrRounds: string = await bcrypt.genSalt();
+    return bcrypt.hash(password, saltOrRounds);
   }
 
   async findAll() {
@@ -76,6 +87,28 @@ export class UserService {
       return await this.prisma.user.delete({ where: { id } });
     } catch (error) {
       throw error;
+    }
+  }
+
+  async recreatePassword(recreatePasswordUserDto: RecreatePasswordUserDto) {
+    try {
+      const { userId, password, confirmPassword } = recreatePasswordUserDto;
+
+      if (password != confirmPassword) {
+        throw new BadRequestException("Passwords doesn't not match");
+      }
+
+      const hashedPassword = await this.hashingPassword(password);
+
+      const updatedData = await this.prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+
+      delete updatedData.password;
+      return updatedData;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to recreate password');
     }
   }
 }
