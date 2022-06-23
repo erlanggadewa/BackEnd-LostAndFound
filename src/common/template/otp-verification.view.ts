@@ -11,12 +11,11 @@ export function generateOtpView(otp: string) {
       </div>
       <p style="font-size:1.1em">Verification Account,</p>
       <p>
-        Terimakasih telah menggunakan aplikasi kami. Gunakan kode OTP berikut untuk menyelesaikan
-        prosedur pendaftaran anda. Harap jangan bagikan kode OTP anda
+        Terimakasih telah menggunakan aplikasi kami. Gunakan kode OTP berikut untuk menyelesaikan akses account anda. Harap jangan bagikan kode OTP anda
       </p>
-      <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">
+      <h1 style="background: #00466a;margin: 0 auto;width: max-content;padding: 1px 12px;color: #fff;border-radius: 4px;">
         ${otp}
-      </h2>
+      </h1>
       <p style="font-size:0.9em;">
         <br />
         Jika terdapat kendala, anda dapat hubungi kami di WhatsApp 082241922849 (Erlangga Dewa Sakti)

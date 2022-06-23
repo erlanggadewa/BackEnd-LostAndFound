@@ -2,6 +2,7 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -9,9 +10,11 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailConfirmationService } from '../email/email-confirmation.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserOtpService } from '../user/otp/user-otp.service';
 import { UserService } from '../user/user.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { ResetUserPasswordDto } from './dto/reset-password-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +23,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly emailConfirmationService: EmailConfirmationService,
+    private userOtpService: UserOtpService,
   ) {}
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
@@ -72,5 +76,21 @@ export class AuthService {
     });
 
     return createdUser;
+  }
+
+  async resetPassword(resetUserPasswordDto: ResetUserPasswordDto) {
+    const { email } = resetUserPasswordDto;
+    const user = await this.userService.findOneByEmail(email);
+
+    if (user) {
+      await this.emailConfirmationService.sendVerificationLink({
+        email: user.email,
+        userId: user.id,
+      });
+      delete user.password;
+      return user;
+    }
+
+    throw new NotFoundException('User not found');
   }
 }

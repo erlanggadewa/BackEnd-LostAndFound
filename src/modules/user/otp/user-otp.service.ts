@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import CreateUserOtpDto from './dto/create-user-otp.dto';
+import VerifyUserOtpDto from './dto/verify-user-otp.dto';
 
 @Injectable()
 export class UserOtpService {
@@ -17,19 +18,33 @@ export class UserOtpService {
     return await this.prisma.userOtp.create({ data });
   }
 
-  async verifyOtp(userOtpDto: CreateUserOtpDto) {
-    const data = await this.findLatestOtpByUserId(userOtpDto.userId);
+  async verifyRegisterOtp(verifyUserOtpDto: VerifyUserOtpDto) {
+    const isValidOtp = await this.verifyOtp(verifyUserOtpDto);
+    if (isValidOtp) {
+      const verifiedUser = await this.prisma.user.update({
+        where: { id: verifyUserOtpDto.userId },
+        data: { activeStatus: true },
+      });
+      delete verifiedUser.password;
+      return verifiedUser;
+    }
+  }
 
-    const isMatch = await bcrypt.compare(userOtpDto.otp, data.otp);
+  async verifyResetOtp(verifyUserOtpDto: VerifyUserOtpDto) {
+    const isValidOtp = await this.verifyOtp(verifyUserOtpDto);
+    if (isValidOtp) {
+      return isValidOtp;
+    }
+  }
+
+  private async verifyOtp(verifyUserOtpDto: VerifyUserOtpDto) {
+    const data = await this.findLatestOtpByUserId(verifyUserOtpDto.userId);
+
+    const isMatch = await bcrypt.compare(verifyUserOtpDto.otp, data.otp);
     if (!isMatch) {
       throw new BadRequestException('Invalid OTP');
     }
-    const verifiedUser = await this.prisma.user.update({
-      where: { id: userOtpDto.userId },
-      data: { activeStatus: true },
-    });
-    delete verifiedUser.password;
-    return verifiedUser;
+    return true;
   }
 
   async findLatestOtpByUserId(userId: string) {

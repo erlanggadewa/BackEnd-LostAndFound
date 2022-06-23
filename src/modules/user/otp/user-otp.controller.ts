@@ -30,10 +30,17 @@ export class UserOtpController {
     };
   }
 
-  @ApiOperation({ summary: `Verify user's OTP` })
+  @ApiOperation({ summary: `Verify user's register OTP` })
   @Post('verify')
-  async verifyOtp(@Body() userOtpDto: CreateUserOtpDto) {
-    const data = await this.userOtpService.verifyOtp(userOtpDto);
+  async verifyRegisterOtp(@Body() userOtpDto: CreateUserOtpDto) {
+    const data = await this.userOtpService.verifyRegisterOtp(userOtpDto);
     return { data, message: 'User account verified' };
+  }
+
+  @ApiOperation({ summary: `Verify user's forgot password OTP` })
+  @Post('verify/reset-password')
+  async verifyResetOtp(@Body() userOtpDto: CreateUserOtpDto) {
+    const data = await this.userOtpService.verifyResetOtp(userOtpDto);
+    return { data, message: 'User account password reset approved' };
   }
 }
