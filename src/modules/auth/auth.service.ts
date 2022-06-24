@@ -10,7 +10,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailConfirmationService } from '../email/email-confirmation.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { UserOtpService } from '../user/otp/user-otp.service';
 import { UserService } from '../user/user.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -23,7 +22,6 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly emailConfirmationService: EmailConfirmationService,
-    private userOtpService: UserOtpService,
   ) {}
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
@@ -67,10 +65,13 @@ export class AuthService {
       throw new BadRequestException("Passwords doesn't not match");
     }
 
-    delete registerUserDto.confirmPassword;
-    const createdUser = await this.userService.create(user);
-
-    return createdUser;
+    try {
+      const createdUser = await this.userService.create(user);
+      delete createdUser.password;
+      return createdUser;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async resetPassword(resetUserPasswordDto: ResetUserPasswordDto) {

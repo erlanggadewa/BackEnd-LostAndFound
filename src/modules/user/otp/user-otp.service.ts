@@ -10,12 +10,16 @@ export class UserOtpService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createOtp(userOtpDto: CreateUserOtpDto) {
-    const salt = await bcrypt.genSalt();
-    userOtpDto.otp = await bcrypt.hash(userOtpDto.otp, salt);
+    try {
+      const salt = await bcrypt.genSalt();
+      userOtpDto.otp = await bcrypt.hash(userOtpDto.otp, salt);
 
-    const data: Prisma.UserOtpCreateInput = userOtpDto;
+      const data: Prisma.UserOtpCreateInput = userOtpDto;
 
-    return await this.prisma.userOtp.create({ data });
+      return await this.prisma.userOtp.create({ data });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async verifyRegisterOtp(verifyUserOtpDto: VerifyUserOtpDto) {
