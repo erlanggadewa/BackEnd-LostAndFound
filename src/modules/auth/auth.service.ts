@@ -70,11 +70,6 @@ export class AuthService {
     delete registerUserDto.confirmPassword;
     const createdUser = await this.userService.create(user);
 
-    await this.emailConfirmationService.sendVerificationLink({
-      userId: createdUser.id,
-      email: createdUser.email,
-    });
-
     return createdUser;
   }
 
