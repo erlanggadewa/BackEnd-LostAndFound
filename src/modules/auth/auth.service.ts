@@ -50,7 +50,13 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto) {
+    if (registerUserDto.password != registerUserDto.confirmPassword) {
+      throw new BadRequestException("Passwords doesn't not match");
+    }
+
+    delete registerUserDto.confirmPassword;
     const user: CreateUserDto = registerUserDto;
+
     const userQuery = await this.userService.findOneByEmail(user.email);
     if (userQuery) {
       delete userQuery.password;
@@ -59,10 +65,6 @@ export class AuthService {
         message: `User already exists`,
         user: userQuery,
       });
-    }
-
-    if (registerUserDto.password != registerUserDto.confirmPassword) {
-      throw new BadRequestException("Passwords doesn't not match");
     }
 
     try {
