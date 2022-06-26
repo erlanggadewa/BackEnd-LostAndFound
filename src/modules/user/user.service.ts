@@ -111,4 +111,21 @@ export class UserService {
       throw new InternalServerErrorException('Failed to recreate password');
     }
   }
+
+  async upsert(createUserDto: CreateUserDto) {
+    try {
+      const data: Prisma.UserCreateInput = createUserDto;
+
+      data.password = await this.hashingPassword(data.password);
+      const userAccount = await this.prisma.user.upsert({
+        where: { email: data.email },
+        update: { ...data },
+        create: { ...data },
+      });
+      delete userAccount.password;
+      return userAccount;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

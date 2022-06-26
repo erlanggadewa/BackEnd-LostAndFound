@@ -58,7 +58,7 @@ export class AuthService {
     const user: CreateUserDto = registerUserDto;
 
     const userQuery = await this.userService.findOneByEmail(user.email);
-    if (userQuery) {
+    if (userQuery.activeStatus) {
       delete userQuery.password;
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
@@ -68,7 +68,8 @@ export class AuthService {
     }
 
     try {
-      const createdUser = await this.userService.create(user);
+      const createdUser = await this.userService.upsert(user);
+
       delete createdUser.password;
       return createdUser;
     } catch (error) {
