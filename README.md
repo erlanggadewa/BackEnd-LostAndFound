@@ -1,3 +1,20 @@
+# Service application for LoFo Telu (Lost and Found Telu)
+### Documentation : 
+```bash
+https://drive.google.com/drive/folders/1OQGIp6MY8W0TV4e_qgX1qZ0RbLEkKft5
+```
+## Tech Stack
+  1. NestJS
+  2. PostgreSQL
+  3. PrismaORM
+  4. JWT
+  5. NodeMailer
+  6. Swagger
+  7. Git
+
+
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
