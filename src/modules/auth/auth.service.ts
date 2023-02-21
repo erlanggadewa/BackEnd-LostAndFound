@@ -2,6 +2,7 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -23,6 +24,9 @@ export class AuthService {
     private configService: ConfigService,
     private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
+
+  private readonly logger = new Logger(AuthService.name);
+
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
     if (user) {
@@ -58,7 +62,8 @@ export class AuthService {
     const user: CreateUserDto = registerUserDto;
 
     const userQuery = await this.userService.findOneByEmail(user.email);
-    if (userQuery.activeStatus) {
+
+    if (userQuery?.activeStatus) {
       delete userQuery.password;
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
@@ -73,6 +78,7 @@ export class AuthService {
       delete createdUser.password;
       return createdUser;
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }

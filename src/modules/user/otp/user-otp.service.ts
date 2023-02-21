@@ -44,6 +44,10 @@ export class UserOtpService {
   private async verifyOtp(verifyUserOtpDto: VerifyUserOtpDto) {
     const data = await this.findLatestOtpByUserId(verifyUserOtpDto.userId);
 
+    if (!data) {
+      throw new BadRequestException('Data not found');
+    }
+
     const isMatch = await bcrypt.compare(verifyUserOtpDto.otp, data.otp);
     if (!isMatch) {
       throw new BadRequestException('Invalid OTP');

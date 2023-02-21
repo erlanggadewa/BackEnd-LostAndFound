@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum Role {
@@ -44,7 +44,7 @@ enum StatusAnswer {
 }
 
 model User {
-  id           String  @id @default(uuid())
+  id           String  @id @default(uuid()) @map("_id")
   email        String  @unique
   name         String
   password     String
@@ -64,7 +64,7 @@ model User {
 }
 
 model UserOtp {
-  id     String @id @default(uuid())
+  id     String @id @default(uuid()) @map("_id")
   User   User?  @relation(fields: [userId], references: [id])
   userId String
   otp    String
@@ -74,7 +74,7 @@ model UserOtp {
 }
 
 model Post {
-  id              String          @id @default(uuid())
+  id              String          @id @default(uuid()) @map("_id")
   User            User?           @relation(fields: [userId], references: [id])
   userId          String
   typePost        TypePost
@@ -94,7 +94,7 @@ model Post {
 }
 
 model Question {
-  id             String         @id @default(uuid())
+  id             String         @id @default(uuid()) @map("_id")
   User           User?          @relation(fields: [userId], references: [id])
   userId         String
   Post           Post?          @relation(fields: [postId], references: [id])
@@ -109,7 +109,7 @@ model Question {
 }
 
 model Answer {
-  id           String       @id @default(uuid())
+  id           String       @id @default(uuid()) @map("_id")
   Question     Question?    @relation(fields: [questionId], references: [id])
   questionId   String
   User         User?        @relation(fields: [userId], references: [id])
